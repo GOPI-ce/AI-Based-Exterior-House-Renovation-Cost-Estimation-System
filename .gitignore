@@ -26,3 +26,7 @@ Thumbs.db
 
 # Local logs
 *.log
+
+# Local deployment logs
+.modal-*.txt
+.modal-*.log
