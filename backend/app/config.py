@@ -19,6 +19,10 @@ class Settings(BaseSettings):
     sam_model_id: str = "facebook/sam2.1-hiera-tiny"
     sam_threads: int = 2
 
+    # Per-surface distances for measurement (Apache-2.0; the Base/Large variants are non-commercial).
+    enable_depth: bool = True
+    depth_model_id: str = "depth-anything/Depth-Anything-V2-Metric-Outdoor-Small-hf"
+
     # --- Storage & web ---------------------------------------------------------
     database_url: str = "sqlite:///./data/facade.db"
     cors_origins: str = "http://localhost:3000"

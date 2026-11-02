@@ -1,3 +1,4 @@
+import { depthOnLine, FT_PER_M, type ViewDepth } from "./depth";
 import type { ComponentType, Plane, Point, Region, ScaleReference, View } from "./types";
 
 /** Must match LAYER_PRIORITY in backend/app/services/geometry.py: higher layers cover lower ones. */
@@ -42,6 +43,7 @@ export function distance(a: Point, b: Point, width = 1, height = 1): number {
 // --- Scale: same algorithm as backend/app/services/scale.py ----------------------------------
 const OUTLIER_TOLERANCE = 0.35;
 const MIN_LINE_PX = 8;
+const CAMERA_ONLY_CONFIDENCE = 0.3;
 
 export interface PlaneScale {
   ftPerPxX: number;
@@ -51,6 +53,10 @@ export interface PlaneScale {
   cuesUsed: string[];
   cuesRejected: string[];
   borrowedFrom: string | null;
+  /** Distance (m) at which ftPerPxX/Y hold; null when the photo has no depth map. */
+  refDepthM: number | null;
+  /** No reference at all: depth model + assumed focal length (rough). */
+  cameraOnly: boolean;
 }
 
 export function planeForRegion(region: Region, view: View): Plane | null {
@@ -82,15 +88,21 @@ function consensus(samples: Sample[]) {
   return { value, spread, used: kept.map((k) => k[2]), rejected: usable.filter((u) => !kept.includes(u)).map((u) => u[2]) };
 }
 
-/** Feet per pixel (horizontal and vertical) of a plane: robust consensus of its reference cues. */
-export function planeScale(plane: Plane, view: View, seen: Set<string> = new Set()): PlaneScale | null {
+/**
+ * Feet per pixel (horizontal and vertical) of a plane: robust consensus of its reference cues.
+ * With a depth map each cue is normalised by its own distance (see backend scale.py).
+ */
+export function planeScale(plane: Plane, view: View, depth: ViewDepth | null = null, seen: Set<string> = new Set()): PlaneScale | null {
   const vertical: Sample[] = [];
   const horizontal: Sample[] = [];
   const refs = plane.references.filter((r) => r.enabled);
+  const refDepths = new Map<string, number>();
   for (const r of refs) {
     const px = distance(r.p1, r.p2, view.width, view.height);
     if (px < MIN_LINE_PX) continue;
-    const sample: Sample = [r.real_length_ft / px, r.source === "auto" ? r.weight : 1, r];
+    const z = depth ? depthOnLine(depth.grid, r.p1, r.p2) : 1;
+    refDepths.set(r.id, z);
+    const sample: Sample = [r.real_length_ft / px / z, r.source === "auto" ? r.weight : 1, r];
     if (r.axis !== "horizontal") vertical.push(sample);
     if (r.axis !== "vertical") horizontal.push(sample);
   }
@@ -98,9 +110,10 @@ export function planeScale(plane: Plane, view: View, seen: Set<string> = new Set
   const h = consensus(horizontal);
   if (!v && !h) {
     const fallback = view.planes.find((p) => p.id === plane.fallback_plane_id);
-    if (!fallback || seen.has(fallback.id)) return null;
-    const borrowed = planeScale(fallback, view, new Set([...seen, plane.id]));
-    return borrowed && { ...borrowed, confidence: borrowed.confidence * 0.5, borrowedFrom: fallback.name };
+    const borrowed = fallback && !seen.has(fallback.id) ? planeScale(fallback, view, depth, new Set([...seen, plane.id])) : null;
+    // With depth the borrowed scale is corrected for distance, so it is far more trustworthy.
+    if (borrowed && !borrowed.cameraOnly) return { ...borrowed, confidence: borrowed.confidence * (depth ? 0.8 : 0.5), borrowedFrom: fallback!.name };
+    return cameraScale(plane, view, depth);
   }
   const y = (v ?? h)!;
   const x = (h ?? v)!;
@@ -111,15 +124,59 @@ export function planeScale(plane: Plane, view: View, seen: Set<string> = new Set
   let confidence = (manual ? 0.75 : 0.35) + 0.12 * Math.min(used.length - 1, 3);
   confidence *= Math.max(0.3, 1 - 2 * spread);
   if (plane.confirmed) confidence = Math.max(confidence, 0.9);
+  // Express the scale at the cues' typical distance, so ft/px reads naturally.
+  const z0 = depth ? weightedMedian(used.map((r) => [refDepths.get(r.id)!, 1])) : null;
+  const k = z0 ?? 1;
   return {
-    ftPerPxX: x.value,
-    ftPerPxY: y.value,
+    ftPerPxX: x.value * k,
+    ftPerPxY: y.value * k,
     confidence: Math.round(Math.min(confidence, 0.97) * 100) / 100,
     spread,
     cuesUsed: used.map((r) => r.name),
     cuesRejected: rejected.map((r) => r.name),
     borrowedFrom: null,
+    refDepthM: z0,
+    cameraOnly: false,
   };
+}
+
+/** Last resort without any reference: the depth model's metric distances and the camera's focal length. */
+function cameraScale(plane: Plane, view: View, depth: ViewDepth | null): PlaneScale | null {
+  if (!depth) return null;
+  const zs = view.regions
+    .filter((r) => depth.regions.has(r.id) && planeForRegion(r, view) === plane)
+    .map((r) => [depth.regions.get(r.id)!, 1] as [number, number]);
+  const z0 = zs.length ? weightedMedian(zs) : depth.grid.cm.reduce((s, v) => s + v, 0) / depth.grid.cm.length / 100;
+  const fpp = (FT_PER_M / (depth.grid.focalNorm * view.width)) * z0;
+  return {
+    ftPerPxX: fpp,
+    ftPerPxY: fpp,
+    confidence: CAMERA_ONLY_CONFIDENCE,
+    spread: 0.15,
+    cuesUsed: ["Camera & depth model (no reference)"],
+    cuesRejected: [],
+    borrowedFrom: null,
+    refDepthM: z0,
+    cameraOnly: true,
+  };
+}
+
+/** Feet per pixel (x, y) of a scale for a surface at `depthM` metres from the camera. */
+export function atDepth(scale: PlaneScale, depthM: number | null | undefined): [number, number] {
+  if (scale.refDepthM == null || !depthM) return [scale.ftPerPxX, scale.ftPerPxY];
+  const k = depthM / scale.refDepthM;
+  return [scale.ftPerPxX * k, scale.ftPerPxY * k];
+}
+
+/** A region's feet per pixel (x, y), measured at its own distance; null without a scale. */
+export function regionFtPerPx(region: Region, view: View, scales: Map<string, PlaneScale | null>, depth: ViewDepth | null): [number, number] | null {
+  const plane = planeForRegion(region, view);
+  const scale = plane ? scales.get(plane.id) : null;
+  return scale ? atDepth(scale, depth?.regions.get(region.id)) : null;
+}
+
+export function planeScales(view: View, depth: ViewDepth | null): Map<string, PlaneScale | null> {
+  return new Map(view.planes.map((p) => [p.id, planeScale(p, view, depth)]));
 }
 
 /** Real length of a reference line according to a plane's scale (to show what a line implies). */

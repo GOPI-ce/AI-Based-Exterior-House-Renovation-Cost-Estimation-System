@@ -164,3 +164,21 @@ def test_outdated_cached_analysis_is_recomputed(client):
     r = client.post(f"/api/images/{image['image_id']}/analyze", headers=OWNER)
     assert r.status_code == 200 and r.json()["planes"]
     assert app.state.analyzer.calls == 1
+
+
+def test_demo_depth_map_is_served_and_used(client):
+    r = client.get("/api/images/demo-house/depth")
+    assert r.status_code == 200
+    grid = r.json()
+    assert grid["cols"] == 192 and grid["rows"] == 144
+
+    project = client.get("/api/projects/demo", headers=OWNER).json()
+    est = client.post("/api/estimate", json={"data": project["data"]}).json()
+    assert all(line["distance_m"] for line in est["lines"])
+    assert any(p["ref_depth_m"] for p in est["planes"])
+
+
+def test_depth_is_unavailable_without_the_model(client):
+    image = upload(client, textured_image(seed=11)).json()
+    r = client.get(f"/api/images/{image['image_id']}/depth", headers=OWNER)
+    assert r.status_code == 404 and r.json()["detail"]["depth"] == "disabled"

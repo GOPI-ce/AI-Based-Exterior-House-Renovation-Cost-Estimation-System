@@ -3,6 +3,7 @@
 import { ArrowRight, MousePointerClick, Sparkles, SquareDashed, X } from "lucide-react";
 import { useRef, useState } from "react";
 
+import { AiDesigner } from "@/components/design/AiDesigner";
 import { DesignTabs } from "@/components/design/DesignTabs";
 import { MaterialPicker } from "@/components/design/MaterialPicker";
 import { RegionOverlay } from "@/components/stage/RegionOverlay";
@@ -126,6 +127,7 @@ export function DesignStep() {
           </div>
 
           <DesignTabs />
+          {!selected && <AiDesigner />}
 
           {selected ? (
             <SelectedSurface
@@ -197,6 +199,11 @@ function SelectedSurface({
           <X className="size-4" />
         </IconButton>
       </div>
+      {assignment?.note && (
+        <p className="flex gap-1.5 rounded-lg bg-tint px-2.5 py-2 text-xs text-ink-soft">
+          <Sparkles className="mt-px size-3.5 shrink-0 text-accent" /> {assignment.note}
+        </p>
+      )}
       {isOpening ? (
         <Notice tone="info">Windows and doors are kept as they are; their area is deducted from the surrounding walls.</Notice>
       ) : catalog ? (

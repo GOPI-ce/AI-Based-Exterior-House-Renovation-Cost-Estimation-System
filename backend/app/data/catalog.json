@@ -1028,7 +1028,10 @@
    "specs": [
     "Practical coverage ~80 sqft/L per coat on primed plaster",
     "System: 1 coat exterior primer + top coats"
-   ]
+   ],
+   "renew_years": 4.5,
+   "renew_share": 1.0,
+   "upkeep_pct": 0.5
   },
   {
    "id": "ap_apex",
@@ -1088,7 +1091,10 @@
    "specs": [
     "Practical coverage ~90 sqft/L per coat on primed plaster",
     "System: 1 coat exterior primer + top coats"
-   ]
+   ],
+   "renew_years": 6,
+   "renew_share": 1.0,
+   "upkeep_pct": 0.5
   },
   {
    "id": "ap_apex_ultima",
@@ -1148,7 +1154,10 @@
    "specs": [
     "Practical coverage ~100 sqft/L per coat on primed plaster",
     "System: 1 coat exterior primer + top coats"
-   ]
+   ],
+   "renew_years": 7.5,
+   "renew_share": 1.0,
+   "upkeep_pct": 0.5
   },
   {
    "id": "ap_ultima_protek",
@@ -1211,7 +1220,10 @@
     "System: 1 coat primer + 1 coat elastomeric base coat + top coats"
    ],
    "basecoat_rate": 420,
-   "basecoat_coverage_sqft_per_l": 80
+   "basecoat_coverage_sqft_per_l": 80,
+   "renew_years": 11,
+   "renew_share": 1.0,
+   "upkeep_pct": 0.5
   },
   {
    "id": "berger_weathercoat_ll",
@@ -1271,7 +1283,10 @@
    "specs": [
     "Practical coverage ~100 sqft/L per coat on primed plaster",
     "System: 1 coat exterior primer + top coats"
-   ]
+   ],
+   "renew_years": 7,
+   "renew_share": 1.0,
+   "upkeep_pct": 0.5
   },
   {
    "id": "nerolac_excel_total",
@@ -1331,7 +1346,10 @@
    "specs": [
     "Practical coverage ~100 sqft/L per coat on primed plaster",
     "System: 1 coat exterior primer + top coats"
-   ]
+   ],
+   "renew_years": 7,
+   "renew_share": 1.0,
+   "upkeep_pct": 0.5
   },
   {
    "id": "dulux_weathershield_max",
@@ -1391,7 +1409,10 @@
    "specs": [
     "Practical coverage ~105 sqft/L per coat on primed plaster",
     "System: 1 coat exterior primer + top coats"
-   ]
+   ],
+   "renew_years": 8,
+   "renew_share": 1.0,
+   "upkeep_pct": 0.5
   },
   {
    "id": "texture_roller",
@@ -1443,7 +1464,10 @@
     "Finished with 2 coats of exterior emulsion"
    ],
    "kg_per_sqft": 0.15,
-   "bag_kg": 25
+   "bag_kg": 25,
+   "renew_years": 8,
+   "renew_share": 0.4,
+   "upkeep_pct": 0.5
   },
   {
    "id": "stone_spray",
@@ -1491,7 +1515,10 @@
    "default_color": null,
    "specs": [
     "Sprayed in 2-3 mm"
-   ]
+   ],
+   "renew_years": 11,
+   "renew_share": 0.5,
+   "upkeep_pct": 0.5
   },
   {
    "id": "microcement",
@@ -1539,7 +1566,10 @@
    "default_color": null,
    "specs": [
     "2-3 mm trowelled layers + sealer"
-   ]
+   ],
+   "renew_years": 2.5,
+   "renew_share": 0.12,
+   "upkeep_pct": 0.5
   },
   {
    "id": "stone_jaisalmer",
@@ -1592,7 +1622,10 @@
     "Fixed with polymer stone adhesive"
    ],
    "adhesive_sqft_per_bag": 30,
-   "adhesive_rate": 480
+   "adhesive_rate": 480,
+   "renew_years": 3.5,
+   "renew_share": 0.06,
+   "upkeep_pct": 0.3
   },
   {
    "id": "stone_dholpur",
@@ -1643,7 +1676,10 @@
     "20-25 mm cladding strips"
    ],
    "adhesive_sqft_per_bag": 30,
-   "adhesive_rate": 480
+   "adhesive_rate": 480,
+   "renew_years": 3.5,
+   "renew_share": 0.06,
+   "upkeep_pct": 0.3
   },
   {
    "id": "stone_kota",
@@ -1693,7 +1729,10 @@
     "Cut panels, 20-25 mm"
    ],
    "adhesive_sqft_per_bag": 35,
-   "adhesive_rate": 480
+   "adhesive_rate": 480,
+   "renew_years": null,
+   "renew_share": 0,
+   "upkeep_pct": 0.3
   },
   {
    "id": "stone_slate",
@@ -1743,7 +1782,10 @@
     "Natural split strips"
    ],
    "adhesive_sqft_per_bag": 30,
-   "adhesive_rate": 480
+   "adhesive_rate": 480,
+   "renew_years": null,
+   "renew_share": 0,
+   "upkeep_pct": 0.4
   },
   {
    "id": "stone_ledge",
@@ -1794,7 +1836,10 @@
     "Interlocking 150 x 600 mm panels"
    ],
    "adhesive_sqft_per_bag": 30,
-   "adhesive_rate": 480
+   "adhesive_rate": 480,
+   "renew_years": null,
+   "renew_share": 0,
+   "upkeep_pct": 0.3
   },
   {
    "id": "granite_cladding",
@@ -1846,7 +1891,10 @@
     "18-20 mm flamed slabs 600 x 300 mm"
    ],
    "adhesive_sqft_per_bag": 25,
-   "adhesive_rate": 520
+   "adhesive_rate": 520,
+   "renew_years": null,
+   "renew_share": 0,
+   "upkeep_pct": 0.2
   },
   {
    "id": "gvt_300x600",
@@ -1902,7 +1950,10 @@
    "tile_h_ft": 0.98,
    "tiles_per_box": 8,
    "adhesive_sqft_per_bag": 40,
-   "adhesive_rate": 480
+   "adhesive_rate": 480,
+   "renew_years": 8,
+   "renew_share": 0.04,
+   "upkeep_pct": 0.3
   },
   {
    "id": "gvt_600x1200",
@@ -1958,7 +2009,10 @@
    "tile_h_ft": 1.97,
    "tiles_per_box": 2,
    "adhesive_sqft_per_bag": 35,
-   "adhesive_rate": 480
+   "adhesive_rate": 480,
+   "renew_years": 8,
+   "renew_share": 0.04,
+   "upkeep_pct": 0.3
   },
   {
    "id": "tile_wood_finish",
@@ -2012,7 +2066,10 @@
    "tile_h_ft": 0.66,
    "tiles_per_box": 6,
    "adhesive_sqft_per_bag": 40,
-   "adhesive_rate": 480
+   "adhesive_rate": 480,
+   "renew_years": null,
+   "renew_share": 0,
+   "upkeep_pct": 0.3
   },
   {
    "id": "brick_tiles",
@@ -2061,7 +2118,10 @@
     "15-20 mm clay slips"
    ],
    "adhesive_sqft_per_bag": 35,
-   "adhesive_rate": 480
+   "adhesive_rate": 480,
+   "renew_years": 4,
+   "renew_share": 0.05,
+   "upkeep_pct": 0.3
   },
   {
    "id": "acp_pvdf",
@@ -2112,7 +2172,10 @@
     "4 mm, 0.25 mm aluminium skins, PVDF coat",
     "Aluminium sub-frame + silicone joints"
    ],
-   "sheet_sqft": 32
+   "sheet_sqft": 32,
+   "renew_years": 8,
+   "renew_share": 0.05,
+   "upkeep_pct": 1.0
   },
   {
    "id": "acp_fr",
@@ -2163,7 +2226,10 @@
     "FR mineral core",
     "Aluminium sub-frame"
    ],
-   "sheet_sqft": 32
+   "sheet_sqft": 32,
+   "renew_years": 8,
+   "renew_share": 0.05,
+   "upkeep_pct": 1.0
   },
   {
    "id": "hpl_exterior",
@@ -2213,7 +2279,10 @@
    "default_color": "#9A6236",
    "specs": [
     "6 mm compact laminate, UV coated"
-   ]
+   ],
+   "renew_years": null,
+   "renew_share": 0,
+   "upkeep_pct": 0.5
   },
   {
    "id": "wpc_louvers",
@@ -2263,7 +2332,10 @@
    "default_color": "#9A6236",
    "specs": [
     "Co-extruded WPC profiles on aluminium battens"
-   ]
+   ],
+   "renew_years": null,
+   "renew_share": 0,
+   "upkeep_pct": 0.6
   },
   {
    "id": "fibre_cement",
@@ -2312,7 +2384,10 @@
    "default_color": "#B9A995",
    "specs": [
     "8 mm planks, pre-primed"
-   ]
+   ],
+   "renew_years": 9,
+   "renew_share": 0.3,
+   "upkeep_pct": 0.4
   },
   {
    "id": "rail_glass_frameless",
@@ -2357,7 +2432,10 @@
    "specs": [
     "12 mm toughened glass, aluminium U-channel",
     "3.5 ft high"
-   ]
+   ],
+   "renew_years": null,
+   "renew_share": 0,
+   "upkeep_pct": 2.0
   },
   {
    "id": "rail_ss_glass",
@@ -2401,7 +2479,10 @@
    "default_color": null,
    "specs": [
     "SS 304 posts every 4 ft + top rail"
-   ]
+   ],
+   "renew_years": null,
+   "renew_share": 0,
+   "upkeep_pct": 1.5
   },
   {
    "id": "rail_ss_pipe",
@@ -2445,7 +2526,10 @@
    "default_color": null,
    "specs": [
     "SS 304, 50 mm top rail, 4 in balusters"
-   ]
+   ],
+   "renew_years": null,
+   "renew_share": 0,
+   "upkeep_pct": 0.5
   },
   {
    "id": "rail_ms",
@@ -2489,7 +2573,10 @@
    "default_color": "#2C2E30",
    "specs": [
     "MS hollow sections, powder coated"
-   ]
+   ],
+   "renew_years": 2.5,
+   "renew_share": 0.15,
+   "upkeep_pct": 0.5
   },
   {
    "id": "metal_enamel",
@@ -2544,7 +2631,10 @@
    "specs": [
     "1 coat red-oxide primer + 2 coats enamel",
     "~120 sqft/L per coat"
-   ]
+   ],
+   "renew_years": 4,
+   "renew_share": 1.0,
+   "upkeep_pct": 0.5
   }
  ]
 }

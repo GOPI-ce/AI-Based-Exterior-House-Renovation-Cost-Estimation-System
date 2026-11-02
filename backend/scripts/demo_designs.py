@@ -3,8 +3,9 @@
     python -m scripts.demo_designs
 
 The regions are what the pipeline detected (scripts/build_demo.py), with the review a user
-would do in the Surfaces step (two outlines corrected, one porch column added). The two planes'
-reference lengths were placed by hand on the photo and confirmed, as a user would in the Scale step.
+would do in the Surfaces step (two outlines corrected, one porch column added). The house front's
+reference length was placed by hand and confirmed, as a user would in the Scale step; the compound
+wall is closer to the camera and borrows that scale, corrected for its distance by the depth map.
 """
 
 from __future__ import annotations
@@ -12,6 +13,7 @@ from __future__ import annotations
 import json
 
 from app.schemas import AnalysisResult, Assignment, Design, Plane, ProjectData, Region, ScaleReference, View
+from app.config import get_settings
 from app.services.demo import DEMO_DIR, DEMO_IMAGE_ID
 
 W, H = 1280, 960
@@ -21,10 +23,7 @@ PLANES = [
         ScaleReference(id="ref-railing", name="Balcony glass railing (3.5 ft)", cue="railing", axis="vertical",
                        p1=(740 / W, 412 / H), p2=(740 / W, 471 / H), real_length_ft=3.5, source="manual"),
     ]),
-    Plane(id="boundary", name="Compound wall & gate", kind="boundary", confirmed=True, references=[
-        ScaleReference(id="ref-gate", name="Main gate height (6 ft)", cue="gate", axis="vertical",
-                       p1=(425 / W, 695 / H), p2=(425 / W, 901 / H), real_length_ft=6.0, source="manual"),
-    ]),
+    Plane(id="boundary", name="Compound wall & gate", kind="boundary", fallback_plane_id="house_front"),
 ]
 COMPOUND = {"wall-1", "wall-2", "wall-3", "wall-4", "gate-1", "gate-2", "pillar-1", "pillar-2", "pillar-3"}
 
@@ -117,6 +116,9 @@ def main() -> None:
     view = View(
         id="front", name="Front view", image_id=DEMO_IMAGE_ID, width=W, height=H,
         regions=regions, planes=PLANES, scene=analysis.scene,
+        # Timings measured when the demo was built (scripts/build_demo.py, build_demo_depth.py).
+        pipeline={**analysis.pipeline, "gemini_primary": "gemini-3.5-flash",
+                  "depth_model": get_settings().depth_model_id, "depth_s": 1.8},
     )
     data = ProjectData(views=[view], designs=DESIGNS, active_design_id="warm")
     spec = {

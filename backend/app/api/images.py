@@ -11,11 +11,13 @@ from pydantic import ValidationError
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.api.deps import DEMO_OWNER, get_analyzer, get_ip_limiter, get_limiter, get_segmenter, require_workspace
+from app.api.deps import DEMO_OWNER, get_analyzer, get_depth, get_ip_limiter, get_limiter, get_segmenter, optional_workspace, require_workspace
 from app.config import get_settings
 from app.db import AnalysisCacheRow, ImageRow, get_db
 from app.schemas import AnalysisResult, ImageInfo
 from app.services.analysis import analyze_photo
+from app.services.depth import DepthEstimator
+from app.services.depth_store import cached_depth, ensure_depth
 from app.services.gemini import GeminiUnavailable, SceneAnalyzer
 from app.services.images import ImageRejected, decode_jpeg, prepare_upload
 from app.services.quality import assess_quality
@@ -78,6 +80,36 @@ def get_image(image_id: str, db: Session = Depends(get_db)) -> Response:
     )
 
 
+@router.get("/{image_id}/depth")
+def get_depth_map(
+    image_id: str,
+    request: Request,
+    workspace: str | None = Depends(optional_workspace),
+    db: Session = Depends(get_db),
+    depth: DepthEstimator = Depends(get_depth),
+    limiter: RateLimiter = Depends(get_limiter),
+    ip_limiter: RateLimiter = Depends(get_ip_limiter),
+) -> Response:
+    """The photo's depth grid (distances in cm). Computing it on request is for the photo's owner and counts
+    against the same hourly AI limit as analysis; a cached grid is free for everyone."""
+    row = db.get(ImageRow, image_id)
+    if row is None:
+        raise HTTPException(404, detail={"message": "Image not found."})
+    grid = cached_depth(db, row.sha256)
+    if grid is None and workspace and row.owner_id == workspace and depth.ready:
+        client_ip = request.client.host if request.client else "unknown"
+        if not ip_limiter.allow(client_ip) or not limiter.allow(workspace):
+            raise HTTPException(429, detail={"message": "AI limit reached for this hour.", "depth": depth.status})
+        grid, _ = ensure_depth(db, row, depth)
+    if grid is None:
+        raise HTTPException(404, detail={"message": "No depth map for this photo yet.", "depth": depth.status})
+    return Response(
+        content=grid.to_json_text(),
+        media_type="application/json",
+        headers={"Cache-Control": "public, max-age=31536000, immutable"},
+    )
+
+
 @router.post("/{image_id}/analyze")
 def analyze_image(
     image_id: str,
@@ -86,6 +118,7 @@ def analyze_image(
     db: Session = Depends(get_db),
     analyzer: SceneAnalyzer = Depends(get_analyzer),
     segmenter: Segmenter = Depends(get_segmenter),
+    depth: DepthEstimator = Depends(get_depth),
     limiter: RateLimiter = Depends(get_limiter),
     ip_limiter: RateLimiter = Depends(get_ip_limiter),
 ) -> AnalysisResult:
@@ -97,7 +130,11 @@ def analyze_image(
     cached = db.get(AnalysisCacheRow, row.sha256)
     if cached:
         try:
-            return AnalysisResult.model_validate_json(cached.result)
+            result = AnalysisResult.model_validate_json(cached.result)
+            grid, _ = ensure_depth(db, row, depth)  # analyses cached before depth existed or was ready
+            if grid is not None:
+                result.pipeline["depth_model"] = grid.model
+            return result
         except ValidationError:
             log.info("Cached analysis for %s is from an older pipeline; re-analysing", row.sha256[:12])
 
@@ -114,6 +151,11 @@ def analyze_image(
     except GeminiUnavailable as exc:
         log.warning("Analysis unavailable: %s", exc)
         raise HTTPException(503, detail={"message": "AI detection is busy right now. Try again in a minute, or draw the regions manually."}) from exc
+
+    grid, depth_s = ensure_depth(db, row, depth, wait_s=60)
+    result.pipeline["depth_model"] = grid.model if grid else "not used"
+    if depth_s is not None:
+        result.pipeline["depth_s"] = depth_s
 
     # Cache only complete results: box-only output (SAM still loading) should be retried later.
     if result.regions and (result.pipeline.get("sam_model") != "not used" or not segmenter.enabled):

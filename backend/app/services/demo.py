@@ -12,7 +12,7 @@ from pathlib import Path
 
 from sqlalchemy.orm import Session
 
-from app.db import ImageRow, ProjectRow, utcnow
+from app.db import DepthCacheRow, ImageRow, ProjectRow, utcnow
 from app.schemas import ProjectData
 from app.services.images import decode_jpeg
 from app.services.quality import assess_quality
@@ -29,18 +29,23 @@ def seed_demo(db: Session) -> None:
     if not project_file.exists() or not image_file.exists():
         return
 
+    jpeg = image_file.read_bytes()
+    sha = hashlib.sha256(jpeg).hexdigest()
     if db.get(ImageRow, DEMO_IMAGE_ID) is None:
-        jpeg = image_file.read_bytes()
         rgb = decode_jpeg(jpeg)
         db.add(ImageRow(
             id=DEMO_IMAGE_ID,
             owner_id=DEMO_OWNER,
-            sha256=hashlib.sha256(jpeg).hexdigest(),
+            sha256=sha,
             width=rgb.shape[1],
             height=rgb.shape[0],
             jpeg=jpeg,
             quality=assess_quality(rgb).model_dump_json(),
         ))
+
+    depth_file = DEMO_DIR / "depth.json"
+    if depth_file.exists() and db.get(DepthCacheRow, sha) is None:
+        db.add(DepthCacheRow(sha256=sha, grid=depth_file.read_text(encoding="utf-8")))
 
     spec = json.loads(project_file.read_text(encoding="utf-8"))
     data = ProjectData.model_validate(spec["data"]).model_dump_json()

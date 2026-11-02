@@ -150,6 +150,8 @@ class View(BaseModel):
     planes: list[Plane] = []
     quality: QualityReport | None = None
     scene: SceneSummary | None = None
+    # What the AI pipeline did for this photo (models, timings, fallbacks), shown to the user.
+    pipeline: dict[str, str | float | int | bool] | None = None
 
     @model_validator(mode="before")
     @classmethod
@@ -174,6 +176,7 @@ class View(BaseModel):
 class Assignment(BaseModel):
     material_id: str
     color: str | None = None  # hex colour for paintable / tintable materials
+    note: str | None = Field(default=None, max_length=200)  # why it was chosen (AI designer)
 
 
 class Design(BaseModel):
@@ -196,6 +199,9 @@ class ProjectSettings(BaseModel):
     city_id: str = "ahmedabad"
     # Site & preparation items switched on for this project (ids from the catalogue's site_items).
     site_items: list[str] | None = None  # None = the catalogue defaults
+    # Long-term cost comparison: years to look ahead and yearly price inflation.
+    horizon_years: int = Field(default=15, ge=5, le=30)
+    inflation_pct: float = Field(default=6, ge=0, le=15)
 
 
 class ProjectData(BaseModel):
@@ -292,6 +298,8 @@ class EstimateLine(BaseModel):
     deductions: float
     net: float
     measured_from: Literal["photo", "override", "unscaled"]
+    future_cost: float = 0  # renewals and upkeep over the settings' horizon, before GST
+    distance_m: float | None = None  # the surface's distance from the camera, when the photo has a depth map
     quantities: list[QuantityItem]
     material_rate: float
     material_rate_unit: str
@@ -335,6 +343,8 @@ class PlaneSummary(BaseModel):
     cues_used: list[str]
     cues_rejected: list[str]
     borrowed_from: str | None = None
+    # Distance (m) at which ft_per_px_x/y hold; surfaces farther away get proportionally more ft/px.
+    ref_depth_m: float | None = None
     confirmed: bool
 
 
@@ -357,7 +367,38 @@ class Estimate(BaseModel):
     grand_total: float
     low_total: float
     high_total: float
+    # Lifetime: today's total plus renewals (repaint, reseal...) and upkeep over the horizon, with inflation and GST.
+    lifetime_years: int = 15
+    lifetime_future: float = 0
+    lifetime_total: float = 0
     total_area_sqft: float
     total_railing_rft: float
     unassigned_regions: list[str]
     warnings: list[str]
+
+
+class DesignSuggestRequest(BaseModel):
+    data: ProjectData
+    budget: float = Field(gt=0, le=1e9)
+    style: str = Field(default="", max_length=300)
+
+
+class DesignStepLog(BaseModel):
+    label: str
+    total: float
+    within_budget: bool
+
+
+class DesignSuggestion(BaseModel):
+    """An AI-proposed design, verified (and if needed repaired) against the budget by the estimator."""
+
+    design: Design
+    concept: str
+    budget: float
+    total: float
+    low: float
+    high: float
+    within_budget: bool
+    steps: list[DesignStepLog]
+    warnings: list[str]
+    model: str

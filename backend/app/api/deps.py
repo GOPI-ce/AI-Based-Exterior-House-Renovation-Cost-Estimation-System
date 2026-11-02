@@ -12,6 +12,7 @@ import re
 
 from fastapi import Header, HTTPException, Request
 
+from app.services.depth import DepthEstimator
 from app.services.gemini import SceneAnalyzer
 from app.services.ratelimit import RateLimiter
 from app.services.segmenter import Segmenter
@@ -39,6 +40,10 @@ def get_analyzer(request: Request) -> SceneAnalyzer:
 
 def get_segmenter(request: Request) -> Segmenter:
     return request.app.state.segmenter
+
+
+def get_depth(request: Request) -> DepthEstimator:
+    return request.app.state.depth
 
 
 def get_limiter(request: Request) -> RateLimiter:

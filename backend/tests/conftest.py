@@ -5,6 +5,7 @@ import tempfile
 _tmp = tempfile.mkdtemp(prefix="facade-tests-")
 os.environ["DATABASE_URL"] = f"sqlite:///{_tmp}/test.db"
 os.environ["ENABLE_SAM"] = "false"
+os.environ["ENABLE_DEPTH"] = "false"
 os.environ["GEMINI_API_KEY"] = ""
 
 import numpy as np  # noqa: E402

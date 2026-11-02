@@ -86,11 +86,13 @@ export interface View {
   planes: Plane[];
   quality: QualityReport | null;
   scene: SceneSummary | null;
+  pipeline?: Record<string, string | number | boolean> | null;
 }
 
 export interface Assignment {
   material_id: string;
   color: string | null;
+  note?: string | null; // why it was chosen (AI designer)
 }
 
 export interface Design {
@@ -110,6 +112,8 @@ export interface ProjectSettings {
   paint_coats: number;
   city_id: string;
   site_items: string[] | null; // null = catalogue defaults
+  horizon_years?: number; // long-term cost comparison (server default 15)
+  inflation_pct?: number; // yearly (server default 6)
 }
 
 export interface ProjectData {
@@ -255,6 +259,8 @@ export interface EstimateLine {
   deductions: number;
   net: number;
   measured_from: "photo" | "override" | "unscaled";
+  future_cost: number;
+  distance_m: number | null;
   quantities: QuantityItem[];
   material_rate: number;
   material_rate_unit: string;
@@ -298,7 +304,27 @@ export interface PlaneSummary {
   cues_used: string[];
   cues_rejected: string[];
   borrowed_from: string | null;
+  ref_depth_m: number | null;
   confirmed: boolean;
+}
+
+export interface DesignStepLog {
+  label: string;
+  total: number;
+  within_budget: boolean;
+}
+
+export interface DesignSuggestion {
+  design: Design;
+  concept: string;
+  budget: number;
+  total: number;
+  low: number;
+  high: number;
+  within_budget: boolean;
+  steps: DesignStepLog[];
+  warnings: string[];
+  model: string;
 }
 
 export interface Estimate {
@@ -320,6 +346,9 @@ export interface Estimate {
   grand_total: number;
   low_total: number;
   high_total: number;
+  lifetime_years: number;
+  lifetime_future: number;
+  lifetime_total: number;
   total_area_sqft: number;
   total_railing_rft: number;
   unassigned_regions: string[];

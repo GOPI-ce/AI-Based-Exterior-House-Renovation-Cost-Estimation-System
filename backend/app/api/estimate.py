@@ -15,6 +15,7 @@ from sqlalchemy.orm import Session
 from app.catalog import get_catalog
 from app.db import ImageRow, get_db
 from app.schemas import Estimate, EstimateRequest, ProjectData
+from app.services.depth_store import depths_for
 from app.services.estimator import estimate_project
 from app.services.report import build_report
 
@@ -33,14 +34,14 @@ class ReportRequest(BaseModel):
 
 
 @router.post("/estimate")
-def estimate(body: EstimateRequest) -> Estimate:
-    return estimate_project(body.data, get_catalog(), body.design_id)
+def estimate(body: EstimateRequest, db: Session = Depends(get_db)) -> Estimate:
+    return estimate_project(body.data, get_catalog(), body.design_id, _depths(db, body.data))
 
 
 @router.post("/report")
 def report(body: ReportRequest, db: Session = Depends(get_db)) -> Response:
     catalog = get_catalog()
-    result = estimate_project(body.data, catalog, body.design_id)
+    result = estimate_project(body.data, catalog, body.design_id, _depths(db, body.data))
 
     originals: dict[str, bytes] = {}
     for view in body.data.views:
@@ -57,6 +58,10 @@ def report(body: ReportRequest, db: Session = Depends(get_db)) -> Response:
         media_type="application/pdf",
         headers={"Content-Disposition": f'attachment; filename="{filename}-estimate.pdf"'},
     )
+
+
+def _depths(db: Session, data: ProjectData):
+    return depths_for(db, [v.image_id for v in data.views])
 
 
 def _decode_render(data_url: str) -> bytes:

@@ -75,6 +75,16 @@ test("scale: planes show confidence and accept a new reference", async ({ page }
   await expect(refs).toHaveCount(count + 1);
 });
 
+test("depth: surfaces are measured at their own distance", async ({ page }) => {
+  await openDemo(page);
+  await page.getByRole("button", { name: /Surfaces/ }).first().click();
+  await clickPhoto(page, 1120, 600); // side wall, set back behind the house front
+  await expect(page.getByText(/About 2\d\.\d m/)).toBeVisible();
+  await page.getByRole("button", { name: /Scale/ }).first().click();
+  await expect(page.getByText("Distance-aware.")).toBeVisible();
+  await expect(page.getByText(/corrected for distance by the depth map/)).toBeVisible();
+});
+
 test("estimate: range, site items, city and BOQ export", async ({ page }) => {
   await openDemo(page);
   await page.getByRole("button", { name: /Estimate/ }).first().click();
@@ -128,4 +138,19 @@ test("upload a real photo and run the AI pipeline", async ({ page }) => {
   await expect(page.getByText(/Found \d+ building parts/)).toBeVisible({ timeout: 180_000 });
   await page.getByRole("button", { name: /Scale/ }).first().click();
   await expect(page.getByText(/High|Medium|Low ·/).first()).toBeVisible();
+  await expect(page.getByText("Distance-aware.")).toBeVisible();
+});
+
+test("AI designer creates a design within the budget", async ({ page }) => {
+  test.skip(!process.env.E2E_AI, "Set E2E_AI=1 to run against live Gemini (uses API quota)");
+  test.setTimeout(180_000);
+  await openDemo(page);
+  await page.getByRole("button", { name: "Make my copy" }).click();
+  await page.waitForURL((url) => /\/p\/[a-f0-9]+$/.test(url.pathname) && !url.pathname.endsWith("/demo"));
+  await page.getByRole("button", { name: /Design it for my budget/ }).click();
+  await page.getByLabel("Budget").fill("350000");
+  await page.getByRole("button", { name: "Warm with natural stone" }).click();
+  await page.getByRole("button", { name: "Create AI design" }).click();
+  await expect(page.getByText("within budget", { exact: true }).first()).toBeVisible({ timeout: 150_000 });
+  await expect(page.getByText(/Added as a new design tab/).first()).toBeVisible();
 });

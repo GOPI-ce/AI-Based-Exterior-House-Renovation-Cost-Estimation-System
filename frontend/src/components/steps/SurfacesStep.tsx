@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Check, Eye, EyeOff, MousePointer2, PenLine, Plus, Tag, Trash2, X } from "lucide-react";
+import { ArrowRight, Check, Eye, EyeOff, Layers3, MousePointer2, PenLine, Plus, Tag, Trash2, X } from "lucide-react";
 import { useEffect, useRef, useState, type MouseEvent, type PointerEvent } from "react";
 
 import { RegionOverlay } from "@/components/stage/RegionOverlay";
@@ -12,7 +12,8 @@ import { PanelHeading, StepLayout } from "@/components/workspace/StepLayout";
 import { ViewSwitcher } from "@/components/workspace/ViewSwitcher";
 import { imageUrl } from "@/lib/api";
 import { formatNumber } from "@/lib/format";
-import { COMPONENT_META, COMPONENT_TYPES, distance, planeForRegion, planeScale, polygonAreaPx } from "@/lib/geometry";
+import { useViewDepth, type ViewDepth } from "@/lib/depth";
+import { COMPONENT_META, COMPONENT_TYPES, distance, planeScales, polygonAreaPx, regionFtPerPx } from "@/lib/geometry";
 import { activeDesign, materialById, nextRegionId } from "@/lib/project";
 import type { Catalog, ComponentType, Point, ProjectData, Region, View } from "@/lib/types";
 
@@ -35,6 +36,7 @@ export function SurfacesStep() {
   const [cursor, setCursor] = useState<Point | null>(null);
   const [hidden, setHidden] = useState<Set<ComponentType>>(new Set());
   const [showLabels, setShowLabels] = useState(false);
+  const depth = useViewDepth(view ?? undefined);
 
   const selected = view?.regions.find((r) => r.id === selectedRegionId) ?? null;
   const { update, checkpoint } = store;
@@ -262,6 +264,7 @@ export function SurfacesStep() {
               key={selected.id}
               region={selected}
               view={view}
+              depth={depth}
               measuredByLength={isMeasuredByLength(selected, store.data, catalog)}
               readOnly={false}
               onChange={(recipe) => updateRegion(selected.id, recipe)}
@@ -274,7 +277,7 @@ export function SurfacesStep() {
               onClose={() => selectRegion(null)}
             />
           ) : (
-            <RegionList view={view} hidden={hidden} setHidden={setHidden} onSelect={selectRegion} />
+            <RegionList view={view} depth={depth} hidden={hidden} setHidden={setHidden} onSelect={selectRegion} />
           )}
           <Button variant="primary" className="w-full" onClick={() => goTo("scale")}>
             Next: check the scale <ArrowRight className="size-4" />
@@ -285,22 +288,23 @@ export function SurfacesStep() {
   );
 }
 
-/** Approximate gross area of a region from the photo (for orientation only; the estimate is server-side). */
-function approxSize(region: Region, view: View): string | null {
-  const plane = planeForRegion(region, view);
-  const scale = plane ? planeScale(plane, view) : null;
-  if (!scale) return null;
+/** Approximate gross area of a region from the photo, at its own distance (the estimate itself is server-side). */
+function approxSize(region: Region, view: View, depth: ViewDepth | null): string | null {
+  const fpp = regionFtPerPx(region, view, planeScales(view, depth), depth);
+  if (!fpp) return null;
   const px = region.polygons.reduce((s, p) => s + polygonAreaPx(p, view.width, view.height), 0);
-  return `≈ ${formatNumber(px * scale.ftPerPxX * scale.ftPerPxY * region.face_factor)} sqft`;
+  return `≈ ${formatNumber(px * fpp[0] * fpp[1] * region.face_factor)} sqft`;
 }
 
 function RegionList({
   view,
+  depth,
   hidden,
   setHidden,
   onSelect,
 }: {
   view: View;
+  depth: ViewDepth | null;
   hidden: Set<ComponentType>;
   setHidden: (s: Set<ComponentType>) => void;
   onSelect: (id: string) => void;
@@ -347,7 +351,7 @@ function RegionList({
                   className="flex w-full items-center gap-2 rounded-lg border border-line px-2.5 py-2 text-left text-sm hover:border-accent/40 hover:bg-tint"
                 >
                   <span className="min-w-0 flex-1 truncate font-medium">{r.label}</span>
-                  <span className="shrink-0 text-xs text-muted">{approxSize(r, view)}</span>
+                  <span className="shrink-0 text-xs text-muted">{approxSize(r, view, depth)}</span>
                   <SourceBadge region={r} />
                 </button>
               ))}
@@ -375,6 +379,7 @@ function isMeasuredByLength(region: Region, data: ProjectData, catalog: Catalog 
 function RegionInspector({
   region,
   view,
+  depth,
   measuredByLength,
   readOnly,
   onChange,
@@ -384,6 +389,7 @@ function RegionInspector({
 }: {
   region: Region;
   view: View;
+  depth: ViewDepth | null;
   measuredByLength: boolean;
   readOnly: boolean;
   onChange: (recipe: (r: Region) => void) => void;
@@ -428,6 +434,13 @@ function RegionInspector({
         <p className="-mt-1 text-[11px] text-muted">A photo shows only the front of a pillar or gate; include the faces you will also finish.</p>
       )}
 
+      {depth?.regions.has(region.id) && (
+        <p className="flex items-center gap-1.5 text-xs text-muted">
+          <Layers3 className="size-3.5 text-accent" />
+          About <b className="text-ink">{depth.regions.get(region.id)!.toFixed(1)} m</b> from the camera; measured at that distance.
+        </p>
+      )}
+
       {view.planes.length > 1 && (
         <Field label="Depth plane" hint="Surfaces nearer or farther from the camera are measured with their own plane's scale.">
           <select className={inputClass} value={region.plane_id ?? view.planes[0].id} disabled={readOnly} onChange={(e) => onChange((r) => void (r.plane_id = e.target.value))}>
@@ -457,7 +470,7 @@ function RegionInspector({
       {!isOpening && (
         <Field
           label={isRailing ? "Measured length on site (optional)" : "Measured area on site (optional)"}
-          hint={`Overrides the photo measurement (${approxSize(region, view) ?? "no scale yet"}).`}
+          hint={`Overrides the photo measurement (${approxSize(region, view, depth) ?? "no scale yet"}).`}
         >
           <NumberInput
             value={isRailing ? region.length_override_ft : region.area_override_sqft}

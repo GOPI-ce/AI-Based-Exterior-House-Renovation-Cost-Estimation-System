@@ -11,7 +11,8 @@
  *  4. the result is alpha-blended into the output.
  * Openings and surfaces without a new material restore the original photo pixels.
  */
-import { COMPONENT_META, layerOrder, planeForRegion, planeScale, polygonBounds, type PlaneScale } from "./geometry";
+import { fetchDepth, viewDepth, type ViewDepth } from "./depth";
+import { COMPONENT_META, layerOrder, planeScales, polygonBounds, regionFtPerPx } from "./geometry";
 import type { Catalog, Design, Material, Region, View } from "./types";
 
 export interface Texture {
@@ -113,6 +114,7 @@ const DETAIL_TYPES = new Set(["gate", "railing"]);
 
 export interface RenderOptions {
   maxSide?: number; // downscale for fast previews
+  depth?: ViewDepth | null; // textures are drawn at each surface's real distance
 }
 
 export function renderView(
@@ -158,7 +160,8 @@ export function renderView(
   const sceneLight = lumWeight ? lumSum / lumWeight : 160;
 
   // Pass 2: paint bottom-to-top.
-  const scales = new Map<string, PlaneScale | null>(view.planes.map((p) => [p.id, planeScale(p, view)]));
+  const depth = options.depth ?? null;
+  const scales = planeScales(view, depth);
   for (const mask of masks) {
     const { region } = mask;
     const assignment = design.assignments[region.id];
@@ -169,12 +172,11 @@ export function renderView(
       restore(mask, src, out, W);
       continue;
     }
-    const plane = planeForRegion(region, view);
-    const ps = plane ? scales.get(plane.id) : null;
     const fallback = FALLBACK_FACADE_WIDTH_FT / view.width;
-    // Feet per *rendered* pixel, horizontally and vertically (angled planes differ).
-    const fpx = (ps?.ftPerPxX ?? fallback) / scale;
-    const fpy = (ps?.ftPerPxY ?? fallback) / scale;
+    const fpp = regionFtPerPx(region, view, scales, depth) ?? [fallback, fallback];
+    // Feet per *rendered* pixel, horizontally and vertically (angled planes differ), at the surface's distance.
+    const fpx = fpp[0] / scale;
+    const fpy = fpp[1] / scale;
     paintMaterial(mask, material, assignment.color, fpx, fpy, sceneLight, out, W, textures);
   }
 
@@ -482,8 +484,8 @@ export function loadPhoto(url: string): Promise<HTMLImageElement> {
 
 /** Render a design for one photo into a JPEG data URL (for the report and downloads). */
 export async function renderToDataUrl(view: View, design: Design, catalog: Catalog, photoUrl: string, maxSide = 1600): Promise<string> {
-  const [photo, textures] = await Promise.all([loadPhoto(photoUrl), loadDesignTextures(design, catalog)]);
+  const [photo, textures, grid] = await Promise.all([loadPhoto(photoUrl), loadDesignTextures(design, catalog), fetchDepth(view.image_id)]);
   const canvas = document.createElement("canvas");
-  renderView(photo, view, design, catalog, textures, canvas, { maxSide });
+  renderView(photo, view, design, catalog, textures, canvas, { maxSide, depth: viewDepth(grid, view) });
   return canvas.toDataURL("image/jpeg", 0.88);
 }

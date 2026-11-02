@@ -59,6 +59,16 @@ class AnalysisCacheRow(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 
+class DepthCacheRow(Base):
+    """Depth maps keyed by image hash (see services/depth.py), shared by the editor and the estimator."""
+
+    __tablename__ = "depth_cache"
+
+    sha256: Mapped[str] = mapped_column(String(64), primary_key=True)
+    grid: Mapped[str] = mapped_column(Text)  # DepthGrid as JSON
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
 def _normalise_url(url: str) -> str:
     # Hosted Postgres providers hand out postgres:// URLs; SQLAlchemy needs the driver name.
     for prefix in ("postgres://", "postgresql://"):

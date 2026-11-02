@@ -109,7 +109,7 @@ export function HomeScreen() {
 
           <Link href="/p/demo" className="group relative block overflow-hidden rounded-3xl border border-line bg-surface shadow-xl shadow-ink/5">
             {/* eslint-disable-next-line @next/next/no-img-element -- photo served by the API */}
-            <img src={imageUrl("demo-house")} alt="Demo house" className="aspect-[4/3] w-full object-cover transition duration-500 group-hover:scale-[1.02]" />
+            <img src="/demo-house.jpg" alt="Demo house" className="aspect-[4/3] w-full object-cover transition duration-500 group-hover:scale-[1.02]" />
             <div className="absolute inset-x-3 bottom-3 flex items-center justify-between rounded-2xl bg-surface/95 px-4 py-3 shadow-lg backdrop-blur">
               <div>
                 <p className="text-sm font-bold">Demo: two-storey house</p>

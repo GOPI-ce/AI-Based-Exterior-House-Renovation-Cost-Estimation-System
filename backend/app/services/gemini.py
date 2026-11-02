@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import logging
 import time
-from typing import Literal
+from typing import Literal, TypeVar
 
 from google import genai
 from google.genai import errors, types
@@ -20,6 +20,7 @@ from app.schemas import ComponentType, CueKind, PlaneKind
 log = logging.getLogger(__name__)
 
 RETRYABLE_STATUS = {429, 500, 503, 504}
+T = TypeVar("T", bound=BaseModel)
 
 
 class GeminiComponent(BaseModel):
@@ -106,6 +107,10 @@ class SceneAnalyzer:
 
     def analyze(self, jpeg: bytes) -> tuple[GeminiScene, str]:
         """Return the parsed scene and the name of the model that produced it."""
+        return self.generate(GeminiScene, [types.Part.from_bytes(data=jpeg, mime_type="image/jpeg"), PROMPT], temperature=0.2)
+
+    def generate(self, schema: type[T], contents: list, temperature: float = 0.2) -> tuple[T, str]:
+        """Structured output from the first model that answers, with one retry on overload."""
         if self._client is None:
             raise GeminiUnavailable("GEMINI_API_KEY is not configured.")
 
@@ -113,7 +118,7 @@ class SceneAnalyzer:
         for model in self.models:
             for attempt in range(2):
                 try:
-                    return self._call(model, jpeg), model
+                    return self._call(model, schema, contents, temperature), model
                 except errors.APIError as exc:
                     last_error = exc
                     log.warning("Gemini %s failed (attempt %d): %s %s", model, attempt + 1, exc.code, exc.message)
@@ -127,24 +132,20 @@ class SceneAnalyzer:
                     break
         raise GeminiUnavailable(str(last_error) if last_error else "No Gemini models configured.")
 
-    def _call(self, model: str, jpeg: bytes) -> GeminiScene:
+    def _call(self, model: str, schema: type[T], contents: list, temperature: float) -> T:
         config = types.GenerateContentConfig(
-            temperature=0.2,
+            temperature=temperature,
             response_mime_type="application/json",
-            response_schema=GeminiScene,
+            response_schema=schema,
         )
         if "2.5" in model:
             # Google recommends disabling thinking for 2.5 models on detection tasks.
             config.thinking_config = types.ThinkingConfig(thinking_budget=0)
 
-        response = self._client.models.generate_content(  # type: ignore[union-attr]
-            model=model,
-            contents=[types.Part.from_bytes(data=jpeg, mime_type="image/jpeg"), PROMPT],
-            config=config,
-        )
-        if isinstance(response.parsed, GeminiScene):
+        response = self._client.models.generate_content(model=model, contents=contents, config=config)  # type: ignore[union-attr]
+        if isinstance(response.parsed, schema):
             return response.parsed
-        return GeminiScene.model_validate_json(response.text or "")
+        return schema.model_validate_json(response.text or "")
 
 
 def box_to_normalised(box_2d: list[int]) -> tuple[float, float, float, float] | None:

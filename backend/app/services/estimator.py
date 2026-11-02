@@ -2,7 +2,7 @@
 
 For every region that has a material in the chosen design:
 
-    photo pixels --plane scale (x, y)--> net sqft or running ft --material rules--> purchase quantities
+    photo pixels --plane scale (x, y) at the surface's distance--> net sqft or running ft --material rules--> purchase quantities
                                                                  --rates x city index--> material + labour
 
 * Net area = region area minus everything layered above it (windows, doors, pillars in front...).
@@ -11,6 +11,8 @@ For every region that has a material in the chosen design:
 * Site & preparation items (scaffolding, surface prep, waterproofing, removal, debris) are added
   from the measured areas.
 * Contingency is applied to the subtotal, then GST to (subtotal + contingency).
+* Lifetime cost: each line's renewals (repaints, resealing...) and yearly upkeep over the comparison
+  horizon, priced like today's work plus inflation, so a cheap paint and a durable cladding compare fairly.
 * Every line also gets a low-high range: the catalogue's low/high rates combined with the expected
   measurement error of its plane's scale (more cues that agree = narrower range).
 """
@@ -34,9 +36,11 @@ from app.schemas import (
     SiteLine,
 )
 from app.services.geometry import RegionMeasure, measure_regions
-from app.services.scale import PlaneScale, plane_for_region, plane_scale, scale_error
+from app.services.depth import DepthGrid
+from app.services.scale import PlaneScale, ViewDepth, plane_scale, region_ft_per_px, scale_error
 
-LARGE_SURFACE_SQFT = 2500  # a single surface bigger than this on a house usually means a wrong scale
+LARGE_SURFACE_SQFT = 2500
+CONSISTENCY_TOLERANCE = 0.3  # planes' distance-corrected scales may differ this much before we warn  # a single surface bigger than this on a house usually means a wrong scale
 
 
 @dataclass
@@ -66,7 +70,9 @@ class Rates:
     labour_high: float
 
 
-def estimate_project(data: ProjectData, catalog: Catalog, design_id: str | None = None) -> Estimate:
+def estimate_project(data: ProjectData, catalog: Catalog, design_id: str | None = None,
+                     depths: dict[str, DepthGrid] | None = None) -> Estimate:
+    """`depths` maps image ids to their depth maps; photos without one use one scale per plane."""
     design = _pick_design(data, design_id)
     city = catalog.city(data.settings.city_id)
     lines: list[EstimateLine] = []
@@ -77,8 +83,10 @@ def estimate_project(data: ProjectData, catalog: Catalog, design_id: str | None 
 
     for view in data.views:
         pixel_measures = measure_regions(view.regions, view.width, view.height)
-        scales: dict[str, PlaneScale | None] = {p.id: plane_scale(p, view) for p in view.planes}
+        depth = ViewDepth.build((depths or {}).get(view.image_id), view)
+        scales: dict[str, PlaneScale | None] = {p.id: plane_scale(p, view, depth) for p in view.planes}
         planes += [_plane_summary(view.name, p, scales[p.id]) for p in view.planes]
+        warnings += _consistency_warnings(view.name, view.planes, scales)
         if not view.planes:
             warnings.append(f"'{view.name}' has no scale yet, so its areas are 0 unless entered manually.")
 
@@ -94,9 +102,8 @@ def estimate_project(data: ProjectData, catalog: Catalog, design_id: str | None 
                 warnings.append(f"Unknown material '{assignment.material_id}' on {region.label}; skipped.")
                 continue
 
-            plane = plane_for_region(region, view)
-            scale = scales.get(plane.id) if plane else None
-            measured = _measure(region, material, pixel_measures[region.id], scale)
+            plane, scale, fpp = region_ft_per_px(region, view, scales, depth)
+            measured = _measure(region, material, pixel_measures[region.id], scale, fpp)
             rates = _rates(material, data, city)
             aux = city.material_index  # primer, base coat and adhesive follow the city's material prices
             priced = _price(material, measured.net, rates.material, data.settings.paint_coats, aux)
@@ -146,6 +153,7 @@ def estimate_project(data: ProjectData, catalog: Catalog, design_id: str | None 
                 deductions=round(max(0.0, measured.gross - measured.net), 1),
                 net=round(measured.net, 1),
                 measured_from=measured.source,  # type: ignore[arg-type]
+                distance_m=round(depth.region(region), 1) if depth and depth.region(region) else None,
                 quantities=priced.quantities,
                 material_rate=round(rates.material, 2),
                 material_rate_unit=material.rate_unit,
@@ -154,6 +162,7 @@ def estimate_project(data: ProjectData, catalog: Catalog, design_id: str | None 
                 material_cost=round(priced.material_cost, 2),
                 labour_cost=round(labour_cost, 2),
                 total=round(priced.material_cost + labour_cost, 2),
+                future_cost=round(_future_cost(material, total, data.settings.horizon_years, data.settings.inflation_pct), 2),
                 low=round(low, 2),
                 high=round(high, 2),
                 notes=notes,
@@ -173,22 +182,24 @@ def estimate_project(data: ProjectData, catalog: Catalog, design_id: str | None 
 # --------------------------------------------------------------------------- #
 # Measurement
 # --------------------------------------------------------------------------- #
-def _measure(region: Region, material: Material, px: RegionMeasure, scale: PlaneScale | None) -> Measured:
+def _measure(region: Region, material: Material, px: RegionMeasure, scale: PlaneScale | None,
+             fpp: tuple[float, float] | None) -> Measured:
+    """`fpp` is the region's (ft per px x, ft per px y) at its own distance."""
     error = scale_error(scale)
     if material.calc == "railing":
         if region.length_override_ft is not None:
             return Measured("rft", region.length_override_ft, region.length_override_ft, "override", 0.03)
-        if scale is None:
+        if fpp is None:
             return Measured("rft", 0.0, 0.0, "unscaled", 0.5)
         dx, dy = px.long_side
-        length = math.hypot(dx * scale.ft_per_px_x, dy * scale.ft_per_px_y)
+        length = math.hypot(dx * fpp[0], dy * fpp[1])
         return Measured("rft", length, length, "photo", error)
 
     if region.area_override_sqft is not None:
         return Measured("sqft", region.area_override_sqft, region.area_override_sqft, "override", 0.03)
-    if scale is None:
+    if fpp is None:
         return Measured("sqft", 0.0, 0.0, "unscaled", 0.5)
-    sqft_per_px2 = scale.ft_per_px_x * scale.ft_per_px_y * region.face_factor
+    sqft_per_px2 = fpp[0] * fpp[1] * region.face_factor
     # An area error is roughly twice the length error (it scales with length squared).
     return Measured("sqft", px.gross_px2 * sqft_per_px2, px.net_px2 * sqft_per_px2, "photo", min(0.6, 2 * error))
 
@@ -365,8 +376,23 @@ def _plane_summary(view_name: str, plane, scale: PlaneScale | None) -> PlaneSumm
         cues_used=scale.cues_used if scale else [],
         cues_rejected=scale.cues_rejected if scale else [],
         borrowed_from=scale.borrowed_from if scale else None,
+        ref_depth_m=round(scale.ref_depth_m, 1) if scale and scale.ref_depth_m else None,
         confirmed=plane.confirmed,
     )
+
+
+def _consistency_warnings(view_name: str, planes, scales: dict[str, PlaneScale | None]) -> list[str]:
+    """With a depth map, every plane's vertical scale per metre of distance should agree (walls are
+    vertical and the camera is the same), so a big disagreement means a wrong reference length."""
+    per_m = [(p.name, s.ft_per_px_y / s.ref_depth_m) for p in planes
+             if (s := scales.get(p.id)) and s.ref_depth_m and not s.borrowed_from and not s.camera_only]
+    if len(per_m) < 2:
+        return []
+    (lo_name, lo), (hi_name, hi) = min(per_m, key=lambda t: t[1]), max(per_m, key=lambda t: t[1])
+    if hi / lo <= 1 + CONSISTENCY_TOLERANCE:
+        return []
+    return [f"'{view_name}': after correcting for distance, the scales of {lo_name} and {hi_name} disagree by "
+            f"{hi / lo - 1:.0%}. One of their reference lengths is probably wrong; check them in the Scale step."]
 
 
 def _pick_design(data: ProjectData, design_id: str | None) -> Design:
@@ -375,6 +401,18 @@ def _pick_design(data: ProjectData, design_id: str | None) -> Design:
         if d.id == wanted:
             return d
     return data.designs[0] if data.designs else Design(id="design-a", name="Design A")
+
+
+def _future_cost(material: Material, installed: float, years: int, inflation_pct: float) -> float:
+    """Renewals and upkeep of one surface over `years`, in future rupees (today's price x inflation)."""
+    grow = 1 + inflation_pct / 100
+    cost = sum(installed * material.upkeep_pct / 100 * grow**y for y in range(1, years + 1))
+    if material.renew_years and material.renew_share:
+        k = 1
+        while k * material.renew_years <= years - 0.5:  # a renewal due in the final months is left out
+            cost += installed * material.renew_share * grow ** (k * material.renew_years)
+            k += 1
+    return cost
 
 
 def _totals(design: Design, city: City, lines: list[EstimateLine], site_lines: list[SiteLine], planes: list[PlaneSummary],
@@ -400,6 +438,8 @@ def _totals(design: Design, city: City, lines: list[EstimateLine], site_lines: l
     low_total = (sum(l.low for l in lines) + sum(x.low for x in site_lines)) * uplift
     high_total = (sum(l.high for l in lines) + sum(x.high for x in site_lines)) * uplift
 
+    lifetime_future = sum(l.future_cost for l in lines) * (1 + s.gst_pct / 100)
+
     if not lines:
         warnings.append("No materials applied yet. Choose a material for at least one surface in the Design step.")
 
@@ -423,6 +463,9 @@ def _totals(design: Design, city: City, lines: list[EstimateLine], site_lines: l
         grand_total=round(grand_total, 2),
         low_total=round(min(low_total, grand_total), 2),
         high_total=round(max(high_total, grand_total), 2),
+        lifetime_years=s.horizon_years,
+        lifetime_future=round(lifetime_future, 2),
+        lifetime_total=round(grand_total + lifetime_future, 2),
         total_area_sqft=round(sum(l.net for l in lines if l.measure_unit == "sqft"), 1),
         total_railing_rft=round(sum(l.net for l in lines if l.measure_unit == "rft"), 1),
         unassigned_regions=unassigned,

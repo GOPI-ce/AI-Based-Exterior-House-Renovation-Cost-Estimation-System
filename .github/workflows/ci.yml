@@ -69,6 +69,7 @@ jobs:
         working-directory: backend
         env:
           ENABLE_SAM: "false"
+          ENABLE_DEPTH: "false"
           GEMINI_API_KEY: ""
           CORS_ORIGINS: http://localhost:3000
         run: |

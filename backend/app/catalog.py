@@ -59,6 +59,12 @@ class Material(BaseModel):
     palette: str | None = None  # key into Catalog.palettes
     default_color: str | None = None
 
+    # Life cycle (for the long-term cost): renewal every `renew_years` costing `renew_share` of the installed cost
+    # (repaint, reseal...), plus yearly upkeep (washing, cleaning) as a % of the installed cost.
+    renew_years: float | None = None
+    renew_share: float = 0.0
+    upkeep_pct: float = 0.0
+
     # Calculation parameters (only those relevant to `calc` are set).
     coverage_sqft_per_l_per_coat: float | None = None
     primer_coverage_sqft_per_l: float | None = None

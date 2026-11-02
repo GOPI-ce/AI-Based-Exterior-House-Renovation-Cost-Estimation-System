@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, CircleHelp, MousePointerClick, Plus, Ruler, Trash2, TriangleAlert } from "lucide-react";
+import { ArrowRight, CircleHelp, Layers3, MousePointerClick, Plus, Ruler, Trash2, TriangleAlert } from "lucide-react";
 import { useRef, useState, type PointerEvent } from "react";
 
 import { RegionOverlay } from "@/components/stage/RegionOverlay";
@@ -11,6 +11,7 @@ import { PanelHeading, StepLayout } from "@/components/workspace/StepLayout";
 import { ViewSwitcher } from "@/components/workspace/ViewSwitcher";
 import { imageUrl } from "@/lib/api";
 import { formatNumber, uid } from "@/lib/format";
+import { useViewDepth, type ViewDepth } from "@/lib/depth";
 import { distance, planeScale, type PlaneScale } from "@/lib/geometry";
 import type { CueKind, Plane, PlaneKind, Point, ScaleReference, View } from "@/lib/types";
 
@@ -42,6 +43,7 @@ export function ScaleStep() {
   const [drawing, setDrawing] = useState<Drawing | null>(null);
   const [assigning, setAssigning] = useState(false);
   const { update, checkpoint } = store;
+  const depth = useViewDepth(view);
 
   if (!view) return null;
   const selected = view.planes.find((p) => p.id === selectedId) ?? view.planes[0] ?? null;
@@ -200,6 +202,15 @@ export function ScaleStep() {
             subtitle="Each depth plane is measured from the objects of known size on it. More cues that agree = a more reliable estimate."
           />
 
+          {depth && view.planes.length > 0 && (
+            <p className="flex gap-1.5 text-xs text-muted">
+              <Layers3 className="mt-px size-3.5 shrink-0 text-accent" />
+              <span>
+                <b className="text-ink">Distance-aware.</b> A depth model estimated how far each surface is from the camera, so references
+                near and far agree and every surface is measured at its own distance.
+              </span>
+            </p>
+          )}
           {view.planes.length === 0 && (
             <Notice tone="warn" icon={<Ruler className="size-4" />} title="No scale yet">
               Add a depth plane, then draw a line over something whose real length you know: a door (usually 7 ft), the gate, a
@@ -212,6 +223,7 @@ export function ScaleStep() {
               key={plane.id}
               plane={plane}
               view={view}
+              depth={depth}
               color={colorOf(plane.id)}
               active={plane.id === selected?.id}
               surfaces={surfaceCount(plane.id)}
@@ -266,6 +278,7 @@ function ConfidenceBadge({ scale }: { scale: PlaneScale | null }) {
 function PlaneCard({
   plane,
   view,
+  depth,
   color,
   active,
   surfaces,
@@ -278,6 +291,7 @@ function PlaneCard({
 }: {
   plane: Plane;
   view: View;
+  depth: ViewDepth | null;
   color: string;
   active: boolean;
   surfaces: number;
@@ -288,7 +302,8 @@ function PlaneCard({
   onAssign: () => void;
   onRemove: () => void;
 }) {
-  const scale = planeScale(plane, view);
+  const scale = planeScale(plane, view, depth);
+  const cameraOnly = Boolean(scale?.cameraOnly);
   // A value the user typed is a measurement, not a guess: it becomes "manual" and needs re-confirming.
   const editRef = (refId: string, recipe: (r: ScaleReference) => void) =>
     onRef(refId, (r, p) => {
@@ -326,12 +341,21 @@ function PlaneCard({
           <span>
             · {formatNumber(1 / scale.ftPerPxY)} px/ft
             {Math.abs(scale.ftPerPxX / scale.ftPerPxY - 1) > 0.03 && ` (horizontal ${formatNumber(1 / scale.ftPerPxX)})`}
+            {scale.refDepthM != null && ` at ${scale.refDepthM.toFixed(1)} m`}
           </span>
         )}
       </div>
 
       {scale?.borrowedFrom && (
-        <p className="text-xs text-warn">No references here yet, so this plane borrows the scale of “{scale.borrowedFrom}” (lower confidence). Add a length you know.</p>
+        <p className="text-xs text-warn">
+          No references here yet, so this plane borrows the scale of “{scale.borrowedFrom}”
+          {depth ? ", corrected for distance by the depth map" : " (lower confidence)"}. Add a length you know.
+        </p>
+      )}
+      {cameraOnly && (
+        <p className="text-xs text-warn">
+          No references at all: sizes come from the depth model and a typical phone lens alone (rough, ±20% or more). Draw a length you know.
+        </p>
       )}
       {scale && scale.cuesRejected.length > 0 && (
         <p className="flex gap-1 text-xs text-warn">

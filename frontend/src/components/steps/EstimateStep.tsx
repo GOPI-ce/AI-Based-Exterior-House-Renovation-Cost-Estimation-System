@@ -209,6 +209,7 @@ function PlanesPanel({ estimate, onFix }: { estimate: Estimate; onFix: () => voi
             </p>
             <p className="text-xs text-muted">
               {p.ft_per_px_y === null ? "No scale" : p.borrowed_from ? `Borrowed from ${p.borrowed_from}` : `From ${p.cues_used.join(", ")}`}
+              {p.ref_depth_m !== null && ` at ${p.ref_depth_m} m, distance-corrected`}
               {p.ft_per_px_y !== null && ` · lengths ±${p.measurement_error_pct}%`}
             </p>
           </div>
@@ -391,6 +392,8 @@ function Categories({ estimate }: { estimate: Estimate }) {
 function Comparison({ estimates, activeId }: { estimates: Estimate[] | null; activeId: string }) {
   if (!estimates) return <Spinner />;
   const min = Math.min(...estimates.map((e) => e.grand_total).filter((t) => t > 0));
+  const minLife = Math.min(...estimates.map((e) => e.lifetime_total).filter((t) => t > 0));
+  const years = estimates[0]?.lifetime_years ?? 15;
   return (
     <div className="space-y-2">
       {estimates.map((e) => (
@@ -403,10 +406,20 @@ function Comparison({ estimates, activeId }: { estimates: Estimate[] | null; act
           </div>
           <div className="text-right">
             <p className="font-bold">{formatINRShort(e.grand_total)}</p>
-            {e.grand_total === min && estimates.length > 1 && <Badge tone="accent">lowest</Badge>}
+            {e.grand_total === min && estimates.length > 1 && <Badge tone="accent">lowest today</Badge>}
+            {e.lifetime_total > 0 && (
+              <p className="mt-0.5 text-xs text-muted">
+                {formatINRShort(e.lifetime_total)} over {years} yrs
+                {e.lifetime_total === minLife && estimates.length > 1 && <Badge tone="info" className="ml-1">lowest long-term</Badge>}
+              </p>
+            )}
           </div>
         </div>
       ))}
+      <p className="text-[11px] text-faint">
+        Long-term cost = today&apos;s total + repaints, resealing and upkeep over {years} years, with inflation and GST. Durable finishes
+        often cost less over time than cheap paint.
+      </p>
     </div>
   );
 }
@@ -436,6 +449,14 @@ function Settings({ data, catalog, onChange }: { data: ProjectData; catalog: Cat
         </Field>
         <Field label="GST">
           <NumberInput value={s.gst_pct} min={0} max={28} suffix="%" onChange={(v) => onChange((d) => void (d.settings.gst_pct = v ?? 0))} />
+        </Field>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        <Field label="Long-term horizon">
+          <NumberInput value={s.horizon_years ?? 15} min={5} max={30} step={1} suffix="yrs" onChange={(v) => v && onChange((d) => void (d.settings.horizon_years = Math.min(30, Math.max(5, Math.round(v)))))} />
+        </Field>
+        <Field label="Yearly inflation">
+          <NumberInput value={s.inflation_pct ?? 6} min={0} max={15} suffix="%" onChange={(v) => onChange((d) => void (d.settings.inflation_pct = Math.min(15, v ?? 0)))} />
         </Field>
       </div>
       {catalog && (

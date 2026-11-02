@@ -1,13 +1,13 @@
 # Deployment (free tier)
 
-The frontend goes to **Vercel**. The API (FastAPI + SAM) goes to a **Hugging Face Space** (Docker, free CPU).
+The frontend goes to **Vercel**. The API (FastAPI + SAM + depth model) goes to a **Hugging Face Space** (Docker, free CPU).
 The order matters: deploy the API first, so you have its URL for the frontend.
 
 ## 0. Before you start
 
 * Accounts: GitHub, Hugging Face, Vercel (all free).
 * A Gemini API key from <https://aistudio.google.com/apikey>. Never commit it; it only goes into Space secrets.
-* The project builds and tests locally (see README §8–9).
+* The project builds and tests locally (see README §10–11).
 
 ## 1. Push the code to GitHub
 
@@ -38,12 +38,15 @@ Check on GitHub that **no `.env` file** was pushed (`.gitignore` excludes it).
    * Secret `GEMINI_API_KEY` = your key
    * Variable `CORS_ORIGINS` = `http://localhost:3000` for now (you'll add the Vercel URL in step 4)
    * Variable `CORS_ORIGIN_REGEX` = `https://.*\.vercel\.app`
-4. Wait for the build (about 8–12 min the first time: PyTorch and SAM are baked into the image).
+4. Wait for the build (about 10–15 min the first time: PyTorch, SAM and the depth model are baked into the image).
    When it shows *Running*, open `https://<your-hf-username>-facade-ai-api.hf.space/api/health`.
-   You should see `"gemini":"configured"` and, after about 20 s, `"sam":"ready"`.
+   You should see `"gemini":"configured"` and, after about 20 s, `"sam":"ready"` and `"depth":"ready"`.
 
-> Free Spaces sleep after a period without traffic; the first request then takes about a minute (the app
-> shows a "waking up" notice). Open the health URL a few minutes before a demo or an expected busy period.
+> Free Spaces sleep after about 48 hours without traffic; the first request then takes a minute or two (the app
+> shows a "waking up" notice). The repository's **Keep API awake** workflow pings the health URL twice a day:
+> in GitHub → Settings → Secrets and variables → Actions → **Variables**, add `API_HEALTH_URL` =
+> `https://<your-hf-username>-facade-ai-api.hf.space/api/health`, then run the workflow once from the Actions tab.
+> (GitHub pauses scheduled workflows after 60 days without repository activity; re-enable it there if needed.)
 
 ## 3. Frontend on Vercel
 

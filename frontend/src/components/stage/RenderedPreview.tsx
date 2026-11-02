@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { Spinner } from "@/components/ui";
 import { imageUrl } from "@/lib/api";
+import { useViewDepth } from "@/lib/depth";
 import { usePhoto } from "@/lib/hooks";
 import { loadDesignTextures, renderView } from "@/lib/render";
 import type { Catalog, Design, View } from "@/lib/types";
@@ -27,6 +28,7 @@ export function RenderedPreview({
 }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const { photo } = usePhoto(view.image_id);
+  const depth = useViewDepth(view);
   const [rendering, setRendering] = useState(true);
   const [split, setSplit] = useState(50);
   const frame = useRef<HTMLDivElement>(null);
@@ -38,14 +40,14 @@ export function RenderedPreview({
       setRendering(true);
       const textures = await loadDesignTextures(design, catalog).catch(() => new Map());
       if (cancelled || !canvas.current) return;
-      renderView(photo, view, design, catalog, textures, canvas.current, { maxSide });
+      renderView(photo, view, design, catalog, textures, canvas.current, { maxSide, depth });
       setRendering(false);
     }, 60);
     return () => {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [photo, view, design, catalog, maxSide]);
+  }, [photo, view, design, catalog, maxSide, depth]);
 
   function dragSplit(clientX: number) {
     const rect = frame.current?.getBoundingClientRect();

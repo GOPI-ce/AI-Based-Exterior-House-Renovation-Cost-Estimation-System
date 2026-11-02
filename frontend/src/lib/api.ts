@@ -1,6 +1,7 @@
 import type {
   AnalysisResult,
   Catalog,
+  DesignSuggestion,
   Estimate,
   ImageInfo,
   Project,
@@ -8,6 +9,7 @@ import type {
   ProjectSummary,
   QualityReport,
 } from "./types";
+import { decodeDepth, type DepthGrid } from "./depth";
 import { getWorkspaceId } from "./workspace";
 
 export const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000").replace(/\/$/, "");
@@ -49,13 +51,21 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
 export const imageUrl = (imageId: string) => `${API_URL}/api/images/${imageId}`;
 
 export const api = {
-  health: () => request<{ status: string; gemini: string; sam: string }>("/api/health"),
+  health: () => request<{ status: string; gemini: string; sam: string; depth: string }>("/api/health"),
   catalog: () => request<Catalog>("/api/catalog"),
 
   uploadImage(file: File) {
     const form = new FormData();
     form.append("file", file);
     return request<ImageInfo>("/api/images", { method: "POST", body: form });
+  },
+  /** The photo's depth grid, or null while it is not available. */
+  async depth(imageId: string): Promise<DepthGrid | null> {
+    try {
+      return decodeDepth(await request(`/api/images/${imageId}/depth`));
+    } catch {
+      return null;
+    }
   },
   analyzeImage: (imageId: string) => request<AnalysisResult>(`/api/images/${imageId}/analyze`, { method: "POST" }),
 
@@ -70,6 +80,8 @@ export const api = {
 
   estimate: (data: ProjectData, designId: string | null, signal?: AbortSignal) =>
     request<Estimate>("/api/estimate", { method: "POST", body: JSON.stringify({ data, design_id: designId }), signal }),
+  suggestDesign: (data: ProjectData, budget: number, style: string) =>
+    request<DesignSuggestion>("/api/designs/suggest", { method: "POST", body: JSON.stringify({ data, budget, style }) }),
   report: (name: string, data: ProjectData, designId: string, renders: Record<string, string>) =>
     request<Blob>("/api/report", {
       method: "POST",

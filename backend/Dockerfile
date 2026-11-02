@@ -19,9 +19,10 @@ RUN pip install torch==2.15.0 torchvision==0.29.2 --index-url https://download.p
 
 USER user
 
-# Bake the SAM 2.1 weights into the image so a cold start never waits for a download.
-RUN python -c "from transformers import Sam2Model, Sam2Processor; \
-m='facebook/sam2.1-hiera-tiny'; Sam2Processor.from_pretrained(m); Sam2Model.from_pretrained(m)"
+# Bake the SAM 2.1 and Depth Anything V2 weights into the image so a cold start never waits for a download.
+RUN python -c "from transformers import Sam2Model, Sam2Processor, pipeline; \
+m='facebook/sam2.1-hiera-tiny'; Sam2Processor.from_pretrained(m); Sam2Model.from_pretrained(m); \
+pipeline('depth-estimation', model='depth-anything/Depth-Anything-V2-Metric-Outdoor-Small-hf')"
 
 COPY --chown=user app ./app
 COPY --chown=user scripts ./scripts

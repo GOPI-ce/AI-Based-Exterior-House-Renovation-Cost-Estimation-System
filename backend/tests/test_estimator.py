@@ -259,3 +259,24 @@ def test_plane_without_any_usable_reference_warns_even_if_confirmed(project):
     e = estimate_project(project, catalog)
     assert e.lines[0].net == 0
     assert any("no usable reference length" in w for w in e.warnings)
+
+
+def test_lifetime_cost_counts_renewals_and_upkeep(project):
+    project.settings.inflation_pct = 0
+    assign(project, "wall-1", "ap_apex")  # repaint every 6 years: at years 6 and 12 within 15
+    line = estimate_project(project, catalog).lines[0]
+    assert line.future_cost == pytest.approx(line.total * (2 * 1.0 + 15 * 0.005), rel=1e-3)
+
+    assign(project, "wall-1", "stone_kota")  # outlasts the horizon: upkeep only
+    e = estimate_project(project, catalog)
+    assert e.lines[0].future_cost == pytest.approx(e.lines[0].total * 15 * 0.003, rel=1e-3)
+    assert e.lifetime_total == pytest.approx(e.grand_total + e.lifetime_future)
+    assert e.lifetime_future == pytest.approx(e.lines[0].future_cost * 1.18, rel=1e-3)
+
+
+def test_inflation_raises_future_costs(project):
+    assign(project, "wall-1", "ap_apex")
+    project.settings.inflation_pct = 0
+    flat = estimate_project(project, catalog).lifetime_future
+    project.settings.inflation_pct = 6
+    assert estimate_project(project, catalog).lifetime_future > flat * 1.3

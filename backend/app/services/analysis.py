@@ -103,6 +103,7 @@ def analyze_photo(jpeg: bytes, rgb: np.ndarray, analyzer: SceneAnalyzer, segment
         scene=_summary(scene),
         pipeline={
             "gemini_model": model,
+            "gemini_primary": analyzer.models[0] if analyzer.models else model,
             "sam_model": segmenter.model_id if masks else "not used",
             "components_detected": len(regions),
             "scale_cues": len(cues),

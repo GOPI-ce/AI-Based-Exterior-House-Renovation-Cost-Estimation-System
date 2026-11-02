@@ -242,14 +242,16 @@ def _summary_table(e: Estimate) -> Table:
         [Paragraph(f"GST ({e.gst_pct:g}%)", s), "", "", Paragraph(format_inr(e.gst), sr)],
         [Paragraph("<b>Estimated total</b> (most likely)", s), "", "", Paragraph(f"<b>{format_inr(e.grand_total)}</b>", sr)],
         [Paragraph("Likely range", s), "", "", Paragraph(f"{format_inr(e.low_total)} - {format_inr(e.high_total)}", sr)],
+        [Paragraph(f"Over {e.lifetime_years} years, with repaints, resealing and upkeep ({format_inr(e.lifetime_future)} in future, "
+                   "with inflation and GST)", s), "", "", Paragraph(format_inr(e.lifetime_total), sr)],
     ]
     table = Table(rows, colWidths=[CONTENT_W * w for w in (0.46, 0.18, 0.18, 0.18)])
     n = len(rows)
     table.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (-1, 0), TINT),
         ("LINEBELOW", (0, 0), (-1, -1), 0.4, LINE),
-        ("LINEABOVE", (0, n - 5), (-1, n - 5), 0.9, MUTED),
-        ("BACKGROUND", (0, n - 2), (-1, n - 2), colors.HexColor("#E3EFE8")),
+        ("LINEABOVE", (0, n - 6), (-1, n - 6), 0.9, MUTED),
+        ("BACKGROUND", (0, n - 3), (-1, n - 3), colors.HexColor("#E3EFE8")),
         ("TOPPADDING", (0, 0), (-1, -1), 4),
         ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
     ]))
@@ -265,14 +267,22 @@ def _method_notes(data: ProjectData, estimate: Estimate, catalog: Catalog) -> li
         cues = ", ".join(_esc(c) for c in plane.cues_used) or "-"
         how = f"borrowed from {_esc(plane.borrowed_from)}" if plane.borrowed_from else f"consensus of {cues}"
         status = "confirmed by the user" if plane.confirmed else "not yet confirmed"
-        notes.append(f"<b>{_esc(plane.view_name)} / {_esc(plane.plane_name)}</b> scale: {how}; confidence {plane.confidence:.0%}, "
+        where = f" at {plane.ref_depth_m:g} m from the camera" if plane.ref_depth_m else ""
+        notes.append(f"<b>{_esc(plane.view_name)} / {_esc(plane.plane_name)}</b> scale: {how}{where}; confidence {plane.confidence:.0%}, "
                      f"expected length error ±{plane.measurement_error_pct:g}% ({status}).")
     notes += [
         "Building parts were detected by AI (Gemini for labelled boxes and depth planes, SAM 2.1 for precise outlines) and reviewed by the user.",
         "Each depth plane (house front, side, compound) has its own scale: the weighted median of all reference cues on it "
         "(doors, cars, people, railings, user-measured lengths), with outliers ignored and separate horizontal/vertical scales when available.",
+        *([
+            "Distances: a depth model (Depth Anything V2) estimates how far each surface is from the camera. Feet-per-pixel grows "
+            "with distance, so every reference is normalised by its own distance and every surface is measured at its own distance "
+            "(a wall set back behind the balcony is not under-measured, a compound wall near the camera is not over-measured).",
+        ] if any(p.ref_depth_m for p in estimate.planes) else []),
         "Areas: polygon area in pixels x horizontal x vertical feet-per-pixel. Windows, doors and parts in front of a surface are deducted, "
         "so nothing is counted twice. Pillar and gate areas include faces not visible in the photo where set.",
+        "The long-term figure adds each finish's renewals (repaint, reseal, touch-up at its typical interval) and yearly upkeep "
+        "over the period, priced like today's work with yearly inflation; scaffolding for future work is not included.",
         "The likely range combines each material's low/high market rates with the measurement uncertainty of its plane's scale.",
         f"Purchase quantities include wastage and are rounded up to whole packs, bags, boxes or sheets. Paint: {data.settings.paint_coats} top coats "
         "over primer (plus base coat for elastomeric systems). Labour is charged on the net area.",

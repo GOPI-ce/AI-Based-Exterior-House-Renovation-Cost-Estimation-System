@@ -47,6 +47,7 @@ export function Workspace({ initial }: { initial: Project }) {
           for (const design of draft.designs) for (const r of v.regions) delete design.assignments[r.id];
           v.regions = withUniqueIds(result.regions, draft as typeof data, targetId);
           v.scene = result.scene;
+          v.pipeline = result.pipeline;
           // Keep planes the user measured or confirmed; otherwise take the AI's planes and cues.
           const userPlanes = v.planes.some((p) => p.confirmed || p.references.some((r) => r.source === "manual"));
           if (!userPlanes) v.planes = result.planes;

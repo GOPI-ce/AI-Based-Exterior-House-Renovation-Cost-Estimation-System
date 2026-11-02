@@ -214,6 +214,25 @@ cities = [
     {"id": "kochi", "name": "Kochi", "labour_index": 1.12, "material_index": 1.04},
 ]
 
+# Life-cycle data for the long-term cost comparison: (renewal interval in years, renewal cost as a share of the
+# installed cost, annual upkeep as a share of the installed cost). Renewal = repaint, reseal or touch-up as the
+# maintenance notes describe; materials that outlast the comparison period have no renewal.
+LIFECYCLE = {
+    "ap_ace": (4.5, 1.0, 0.005), "ap_apex": (6, 1.0, 0.005), "ap_apex_ultima": (7.5, 1.0, 0.005),
+    "ap_ultima_protek": (11, 1.0, 0.005), "berger_weathercoat_ll": (7, 1.0, 0.005), "nerolac_excel_total": (7, 1.0, 0.005),
+    "dulux_weathershield_max": (8, 1.0, 0.005), "texture_roller": (8, 0.4, 0.005), "stone_spray": (11, 0.5, 0.005),
+    "microcement": (2.5, 0.12, 0.005), "stone_jaisalmer": (3.5, 0.06, 0.003), "stone_dholpur": (3.5, 0.06, 0.003),
+    "stone_kota": (None, 0, 0.003), "stone_slate": (None, 0, 0.004), "stone_ledge": (None, 0, 0.003),
+    "granite_cladding": (None, 0, 0.002), "gvt_300x600": (8, 0.04, 0.003), "gvt_600x1200": (8, 0.04, 0.003),
+    "tile_wood_finish": (None, 0, 0.003), "brick_tiles": (4, 0.05, 0.003), "acp_pvdf": (8, 0.05, 0.01),
+    "acp_fr": (8, 0.05, 0.01), "hpl_exterior": (None, 0, 0.005), "wpc_louvers": (None, 0, 0.006),
+    "fibre_cement": (9, 0.3, 0.004), "rail_glass_frameless": (None, 0, 0.02), "rail_ss_glass": (None, 0, 0.015),
+    "rail_ss_pipe": (None, 0, 0.005), "rail_ms": (2.5, 0.15, 0.005), "metal_enamel": (4, 1.0, 0.005),
+}
+for m in materials:
+    years, share, upkeep = LIFECYCLE[m["id"]]
+    m.update(renew_years=years, renew_share=share, upkeep_pct=upkeep * 100)
+
 catalog = {
     "currency": "INR",
     "region": "Ahmedabad, Gujarat (base)",

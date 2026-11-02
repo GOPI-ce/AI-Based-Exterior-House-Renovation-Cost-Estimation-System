@@ -6,6 +6,10 @@ or a length the user measured). The plane's scale is the weighted median of what
 after dropping outliers, computed separately for the vertical and horizontal directions when both
 kinds of cue exist (that is what corrects the horizontal foreshortening of an angled wall).
 
+When the photo has a depth map (see depth.py), every cue is first divided by its own distance from
+the camera, so cues near and far agree, and each surface is then measured at its own distance.
+Without one, distances count as 1 and this reduces to one scale per plane.
+
 The same algorithm runs in the browser (frontend/src/lib/geometry.ts) for the editor's live sizes.
 """
 
@@ -15,6 +19,7 @@ import math
 from dataclasses import dataclass, field
 
 from app.schemas import PLANE_NAMES, CueKind, Plane, Region, ScaleReference, View
+from app.services.depth import DepthGrid, depth_on_line, region_depths
 from app.services.geometry import region_bounds
 
 # Typical real heights (ft) of objects Gemini may report, used when it gives no estimate,
@@ -34,6 +39,7 @@ CUE_DEFAULTS: dict[str, tuple[float, float]] = {
 OUTLIER_TOLERANCE = 0.35  # cues more than 35% away from the median are ignored
 STOREY_HEIGHT_FT = 10.0  # typical Indian floor-to-floor height
 MIN_LINE_PX = 8
+CAMERA_ONLY_CONFIDENCE = 0.3  # scale from the depth model and an assumed focal length alone
 
 
 @dataclass
@@ -45,6 +51,31 @@ class PlaneScale:
     cues_used: list[str] = field(default_factory=list)
     cues_rejected: list[str] = field(default_factory=list)
     borrowed_from: str | None = None
+    # Distance (m) at which ft_per_px_x/y hold; None when the photo has no depth map.
+    ref_depth_m: float | None = None
+    camera_only: bool = False  # no reference at all: depth model + assumed focal length
+
+    def at_depth(self, depth_m: float | None) -> tuple[float, float]:
+        """Feet per pixel (x, y) for a surface at `depth_m` metres from the camera."""
+        if self.ref_depth_m is None or not depth_m:
+            return self.ft_per_px_x, self.ft_per_px_y
+        k = depth_m / self.ref_depth_m
+        return self.ft_per_px_x * k, self.ft_per_px_y * k
+
+
+@dataclass
+class ViewDepth:
+    """A photo's depth map with each region's distance, computed once per estimate."""
+
+    grid: DepthGrid
+    regions: dict[str, float]
+
+    @classmethod
+    def build(cls, grid: DepthGrid | None, view: View) -> ViewDepth | None:
+        return cls(grid, region_depths(grid, view.regions)) if grid is not None else None
+
+    def region(self, region: Region) -> float | None:
+        return self.regions.get(region.id)
 
 
 def _ft_per_px(ref: ScaleReference, width: int, height: int) -> float | None:
@@ -77,14 +108,17 @@ def _consensus(samples: list[tuple[float, float, ScaleReference]]):
     return value, spread, [r for _, _, r in kept], rejected
 
 
-def plane_scale(plane: Plane, view: View, _seen: frozenset[str] = frozenset()) -> PlaneScale | None:
+def plane_scale(plane: Plane, view: View, depth: ViewDepth | None = None, _seen: frozenset[str] = frozenset()) -> PlaneScale | None:
     refs = [r for r in plane.references if r.enabled]
     vertical, horizontal = [], []
+    ref_depths: dict[str, float] = {}
     for r in refs:
         fpp = _ft_per_px(r, view.width, view.height)
         if fpp is None:
             continue
-        sample = (fpp, r.weight if r.source == "auto" else 1.0, r)
+        z = depth_on_line(depth.grid, r.p1, r.p2) if depth else 1.0
+        ref_depths[r.id] = z
+        sample = (fpp / z, r.weight if r.source == "auto" else 1.0, r)
         if r.axis in ("vertical", "free"):
             vertical.append(sample)
         if r.axis in ("horizontal", "free"):
@@ -94,14 +128,14 @@ def plane_scale(plane: Plane, view: View, _seen: frozenset[str] = frozenset()) -
     h = _consensus(horizontal)
     if v is None and h is None:
         fallback = next((p for p in view.planes if p.id == plane.fallback_plane_id), None)
-        if fallback is None or fallback.id in _seen:
-            return None
-        borrowed = plane_scale(fallback, view, _seen | {plane.id})
-        if borrowed is None:
-            return None
-        borrowed.confidence *= 0.5
-        borrowed.borrowed_from = fallback.name
-        return borrowed
+        if fallback is not None and fallback.id not in _seen:
+            borrowed = plane_scale(fallback, view, depth, _seen | {plane.id})
+            if borrowed is not None and not borrowed.camera_only:
+                # With depth the borrowed scale is corrected for distance, so it is far more trustworthy.
+                borrowed.confidence *= 0.8 if depth else 0.5
+                borrowed.borrowed_from = fallback.name
+                return borrowed
+        return _camera_scale(plane, view, depth)
 
     fy, sy, used_v, rej_v = v or h  # type: ignore[misc]
     fx, sx, used_h, rej_h = h or v  # type: ignore[misc]
@@ -116,7 +150,22 @@ def plane_scale(plane: Plane, view: View, _seen: frozenset[str] = frozenset()) -
     confidence *= max(0.3, 1 - 2 * spread)
     if plane.confirmed:
         confidence = max(confidence, 0.9)
-    return PlaneScale(fx, fy, round(min(confidence, 0.97), 2), round(spread, 3), [r.name for r in used], [r.name for r in rejected])
+    # Express the scale at the cues' typical distance, so ft/px reads naturally.
+    z0 = _weighted_median([(ref_depths[r.id], 1.0) for r in used]) if depth else None
+    k = z0 or 1.0
+    return PlaneScale(fx * k, fy * k, round(min(confidence, 0.97), 2), round(spread, 3), [r.name for r in used],
+                      [r.name for r in rejected], ref_depth_m=z0)
+
+
+def _camera_scale(plane: Plane, view: View, depth: ViewDepth | None) -> PlaneScale | None:
+    """Last resort without any reference: the depth model's metric distances and the camera's focal length."""
+    if depth is None:
+        return None
+    zs = [depth.regions[r.id] for r in view.regions if r.id in depth.regions and plane_for_region(r, view) is plane]
+    z0 = _weighted_median([(z, 1.0) for z in zs]) if zs else float(depth.grid.cm.mean()) / 100
+    fpp = depth.grid.ft_per_px_per_m(view.width) * z0
+    return PlaneScale(fpp, fpp, CAMERA_ONLY_CONFIDENCE, 0.15, ["Camera & depth model (no reference)"], [], ref_depth_m=z0,
+                      camera_only=True)
 
 
 def plane_for_region(region: Region, view: View) -> Plane | None:
@@ -137,6 +186,15 @@ def _front_building_span(regions: list[Region], width: int, height: int) -> tupl
     if not tops or max(bottoms) - min(tops) <= 0.1:
         return None
     return min(tops), max(bottoms)
+
+
+def region_ft_per_px(region: Region, view: View, scales: dict[str, PlaneScale | None], depth: ViewDepth | None):
+    """(plane, scale, (ft_per_px_x, ft_per_px_y)) for a region, measured at its own distance."""
+    plane = plane_for_region(region, view)
+    scale = scales.get(plane.id) if plane else None
+    if scale is None:
+        return plane, None, None
+    return plane, scale, scale.at_depth(depth.region(region) if depth else None)
 
 
 def scale_error(scale: PlaneScale | None) -> float:

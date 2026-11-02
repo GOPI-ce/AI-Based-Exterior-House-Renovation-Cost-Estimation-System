@@ -12,6 +12,7 @@ import { imageUrl } from "@/lib/api";
 import { COMPONENT_META, layerOrder } from "@/lib/geometry";
 import { newView } from "@/lib/project";
 import type { View } from "@/lib/types";
+import { PipelineTrace } from "./PipelineTrace";
 
 const VIEW_TYPES: Record<string, string> = {
   front: "Front view",
@@ -196,7 +197,7 @@ function ViewCard({
 
       {analyzing && (
         <p className="mt-2 text-xs text-muted">
-          Gemini is identifying the building parts, then SAM traces their outlines. This takes about 15–30 seconds.
+          Gemini is identifying the building parts, SAM traces their outlines and a depth model measures how far each surface is. This takes about 20–40 seconds.
         </p>
       )}
 
@@ -223,6 +224,8 @@ function ViewCard({
           )}
         </div>
       )}
+
+      {view.pipeline && !analyzing && <PipelineTrace pipeline={view.pipeline} />}
 
       {!readOnly && (
         <div className="mt-3 flex gap-2" onClick={(e) => e.stopPropagation()}>
