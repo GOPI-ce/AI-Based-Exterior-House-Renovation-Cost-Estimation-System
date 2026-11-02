@@ -1,0 +1,2550 @@
+{
+ "currency": "INR",
+ "region": "Ahmedabad, Gujarat (base)",
+ "rates_updated": "2026-11",
+ "rates_note": "Indicative 2026 rates excluding GST: typical dealer prices derived from published MRPs and market listings, and Ahmedabad labour rates. Each rate has a low-high range. Brand names identify product classes for planning; always confirm prices, coverage and warranty terms with the dealer and the manufacturer's data sheet.",
+ "cities": [
+  {
+   "id": "ahmedabad",
+   "name": "Ahmedabad",
+   "labour_index": 1.0,
+   "material_index": 1.0
+  },
+  {
+   "id": "surat",
+   "name": "Surat",
+   "labour_index": 0.98,
+   "material_index": 1.0
+  },
+  {
+   "id": "vadodara",
+   "name": "Vadodara",
+   "labour_index": 0.96,
+   "material_index": 1.0
+  },
+  {
+   "id": "mumbai",
+   "name": "Mumbai",
+   "labour_index": 1.3,
+   "material_index": 1.05
+  },
+  {
+   "id": "pune",
+   "name": "Pune",
+   "labour_index": 1.12,
+   "material_index": 1.02
+  },
+  {
+   "id": "bengaluru",
+   "name": "Bengaluru",
+   "labour_index": 1.15,
+   "material_index": 1.03
+  },
+  {
+   "id": "hyderabad",
+   "name": "Hyderabad",
+   "labour_index": 1.08,
+   "material_index": 1.02
+  },
+  {
+   "id": "chennai",
+   "name": "Chennai",
+   "labour_index": 1.08,
+   "material_index": 1.03
+  },
+  {
+   "id": "delhi_ncr",
+   "name": "Delhi NCR",
+   "labour_index": 1.15,
+   "material_index": 1.02
+  },
+  {
+   "id": "kolkata",
+   "name": "Kolkata",
+   "labour_index": 0.97,
+   "material_index": 1.02
+  },
+  {
+   "id": "jaipur",
+   "name": "Jaipur",
+   "labour_index": 0.95,
+   "material_index": 0.97
+  },
+  {
+   "id": "kochi",
+   "name": "Kochi",
+   "labour_index": 1.12,
+   "material_index": 1.04
+  }
+ ],
+ "site_items": [
+  {
+   "id": "scaffolding",
+   "name": "Scaffolding / staging (MS, ~1 month)",
+   "basis": "house_sqft",
+   "rate": 18,
+   "rate_range": [
+    12,
+    24
+   ],
+   "unit": "sqft",
+   "default": true,
+   "note": "On all house surfaces (not compound walls). Bamboo staging is cheaper (~₹7-9/sqft) but less safe."
+  },
+  {
+   "id": "surface_prep",
+   "name": "Surface preparation (wash, scrape, crack filling)",
+   "basis": "coated_sqft",
+   "rate": 5,
+   "rate_range": [
+    3,
+    8
+   ],
+   "unit": "sqft",
+   "default": true,
+   "note": "Painted and textured surfaces. Major cracks or dampness need separate repair."
+  },
+  {
+   "id": "waterproof_basecoat",
+   "name": "Waterproof base coat under paint",
+   "basis": "basecoat_sqft",
+   "rate": 14,
+   "rate_range": [
+    10,
+    20
+   ],
+   "unit": "sqft",
+   "default": false,
+   "note": "Recommended for walls exposed to driving rain or with past dampness."
+  },
+  {
+   "id": "removal",
+   "name": "Removal of existing finish",
+   "basis": "removal_sqft",
+   "rate": 22,
+   "rate_range": [
+    15,
+    30
+   ],
+   "unit": "sqft",
+   "default": true,
+   "note": "Only for surfaces marked 'remove existing finish'."
+  },
+  {
+   "id": "debris",
+   "name": "Debris removal & site cleaning",
+   "basis": "percent",
+   "rate": 1.5,
+   "rate_range": [
+    1,
+    3
+   ],
+   "unit": "% of works",
+   "default": true,
+   "note": "Percentage of material + labour."
+  }
+ ],
+ "palettes": {
+  "exterior": [
+   {
+    "name": "Chalk White",
+    "hex": "#F4F2EC",
+    "family": "Whites"
+   },
+   {
+    "name": "Swan White",
+    "hex": "#F1EFE7",
+    "family": "Whites"
+   },
+   {
+    "name": "Pearl Mist",
+    "hex": "#ECE9E1",
+    "family": "Whites"
+   },
+   {
+    "name": "Lily White",
+    "hex": "#F3F0E6",
+    "family": "Whites"
+   },
+   {
+    "name": "Linen",
+    "hex": "#EEE8DB",
+    "family": "Whites"
+   },
+   {
+    "name": "Porcelain",
+    "hex": "#E9E7E1",
+    "family": "Whites"
+   },
+   {
+    "name": "Cloud Grey White",
+    "hex": "#E4E3DE",
+    "family": "Whites"
+   },
+   {
+    "name": "Snow Drift",
+    "hex": "#F6F5F0",
+    "family": "Whites"
+   },
+   {
+    "name": "Ivory Lace",
+    "hex": "#F0EADA",
+    "family": "Whites"
+   },
+   {
+    "name": "Rice Paper",
+    "hex": "#EFEADF",
+    "family": "Whites"
+   },
+   {
+    "name": "Moonbeam",
+    "hex": "#E8E6DF",
+    "family": "Whites"
+   },
+   {
+    "name": "Milk Glass",
+    "hex": "#F2F1EB",
+    "family": "Whites"
+   },
+   {
+    "name": "Ivory White",
+    "hex": "#EDE4D3",
+    "family": "Creams & ivories"
+   },
+   {
+    "name": "Vanilla Cream",
+    "hex": "#F1E5C9",
+    "family": "Creams & ivories"
+   },
+   {
+    "name": "Buttermilk",
+    "hex": "#F2E3BE",
+    "family": "Creams & ivories"
+   },
+   {
+    "name": "Almond",
+    "hex": "#EADBC3",
+    "family": "Creams & ivories"
+   },
+   {
+    "name": "Cashew",
+    "hex": "#E7D6B8",
+    "family": "Creams & ivories"
+   },
+   {
+    "name": "Parchment",
+    "hex": "#E9DEC6",
+    "family": "Creams & ivories"
+   },
+   {
+    "name": "Custard",
+    "hex": "#F0DDA9",
+    "family": "Creams & ivories"
+   },
+   {
+    "name": "Champagne Cream",
+    "hex": "#E8D9BC",
+    "family": "Creams & ivories"
+   },
+   {
+    "name": "Honey Milk",
+    "hex": "#EED8AE",
+    "family": "Creams & ivories"
+   },
+   {
+    "name": "Biscuit",
+    "hex": "#E2CCA6",
+    "family": "Creams & ivories"
+   },
+   {
+    "name": "Wheat Field",
+    "hex": "#E5D0A4",
+    "family": "Creams & ivories"
+   },
+   {
+    "name": "Soft Ochre",
+    "hex": "#E4CC98",
+    "family": "Creams & ivories"
+   },
+   {
+    "name": "Sandstone Beige",
+    "hex": "#D9C4A2",
+    "family": "Beiges & sands"
+   },
+   {
+    "name": "Desert Sand",
+    "hex": "#D4BC97",
+    "family": "Beiges & sands"
+   },
+   {
+    "name": "Jaisalmer Sand",
+    "hex": "#D8BE8E",
+    "family": "Beiges & sands"
+   },
+   {
+    "name": "Camel",
+    "hex": "#C8AA7E",
+    "family": "Beiges & sands"
+   },
+   {
+    "name": "Oat",
+    "hex": "#D6C7AE",
+    "family": "Beiges & sands"
+   },
+   {
+    "name": "Warm Taupe",
+    "hex": "#A8927C",
+    "family": "Beiges & sands"
+   },
+   {
+    "name": "Mushroom",
+    "hex": "#B9A995",
+    "family": "Beiges & sands"
+   },
+   {
+    "name": "Khaki Stone",
+    "hex": "#BBA987",
+    "family": "Beiges & sands"
+   },
+   {
+    "name": "Latte",
+    "hex": "#C4A889",
+    "family": "Beiges & sands"
+   },
+   {
+    "name": "Driftwood",
+    "hex": "#B4A18A",
+    "family": "Beiges & sands"
+   },
+   {
+    "name": "Pebble Beach",
+    "hex": "#C9BBA6",
+    "family": "Beiges & sands"
+   },
+   {
+    "name": "Dune",
+    "hex": "#CDB28C",
+    "family": "Beiges & sands"
+   },
+   {
+    "name": "Cocoa",
+    "hex": "#6E5040",
+    "family": "Browns & earth"
+   },
+   {
+    "name": "Walnut Shell",
+    "hex": "#7A5A44",
+    "family": "Browns & earth"
+   },
+   {
+    "name": "Coffee Bean",
+    "hex": "#5B4334",
+    "family": "Browns & earth"
+   },
+   {
+    "name": "Chestnut",
+    "hex": "#8A5A3C",
+    "family": "Browns & earth"
+   },
+   {
+    "name": "Clay Pot",
+    "hex": "#9C6B4E",
+    "family": "Browns & earth"
+   },
+   {
+    "name": "Mud Brown",
+    "hex": "#7F6650",
+    "family": "Browns & earth"
+   },
+   {
+    "name": "Cinnamon",
+    "hex": "#9A6544",
+    "family": "Browns & earth"
+   },
+   {
+    "name": "Teak Brown",
+    "hex": "#8C5E3C",
+    "family": "Browns & earth"
+   },
+   {
+    "name": "Hazel",
+    "hex": "#A07A58",
+    "family": "Browns & earth"
+   },
+   {
+    "name": "Bark",
+    "hex": "#5E4A3B",
+    "family": "Browns & earth"
+   },
+   {
+    "name": "Mocha",
+    "hex": "#7B6352",
+    "family": "Browns & earth"
+   },
+   {
+    "name": "Umber",
+    "hex": "#6A4E3A",
+    "family": "Browns & earth"
+   },
+   {
+    "name": "Terracotta",
+    "hex": "#B4643F",
+    "family": "Terracotta & reds"
+   },
+   {
+    "name": "Burnt Sienna",
+    "hex": "#A9583A",
+    "family": "Terracotta & reds"
+   },
+   {
+    "name": "Brick Red",
+    "hex": "#9E4A36",
+    "family": "Terracotta & reds"
+   },
+   {
+    "name": "Rust",
+    "hex": "#A65A33",
+    "family": "Terracotta & reds"
+   },
+   {
+    "name": "Clay Red",
+    "hex": "#B0624A",
+    "family": "Terracotta & reds"
+   },
+   {
+    "name": "Maroon",
+    "hex": "#6E2E2B",
+    "family": "Terracotta & reds"
+   },
+   {
+    "name": "Indian Red",
+    "hex": "#A04A40",
+    "family": "Terracotta & reds"
+   },
+   {
+    "name": "Coral Clay",
+    "hex": "#C47A5E",
+    "family": "Terracotta & reds"
+   },
+   {
+    "name": "Sindoor",
+    "hex": "#B2402F",
+    "family": "Terracotta & reds"
+   },
+   {
+    "name": "Rosewood",
+    "hex": "#874A44",
+    "family": "Terracotta & reds"
+   },
+   {
+    "name": "Pale Terracotta",
+    "hex": "#CC8E6E",
+    "family": "Terracotta & reds"
+   },
+   {
+    "name": "Dusty Rose",
+    "hex": "#C29A8B",
+    "family": "Terracotta & reds"
+   },
+   {
+    "name": "Mustard",
+    "hex": "#CFA03C",
+    "family": "Yellows & oranges"
+   },
+   {
+    "name": "Turmeric",
+    "hex": "#D6A637",
+    "family": "Yellows & oranges"
+   },
+   {
+    "name": "Marigold",
+    "hex": "#DE9F3A",
+    "family": "Yellows & oranges"
+   },
+   {
+    "name": "Saffron",
+    "hex": "#D98A3B",
+    "family": "Yellows & oranges"
+   },
+   {
+    "name": "Mango Lassi",
+    "hex": "#E7B865",
+    "family": "Yellows & oranges"
+   },
+   {
+    "name": "Golden Wheat",
+    "hex": "#D9B26A",
+    "family": "Yellows & oranges"
+   },
+   {
+    "name": "Amber",
+    "hex": "#C98E3F",
+    "family": "Yellows & oranges"
+   },
+   {
+    "name": "Sunlit Yellow",
+    "hex": "#E8C36A",
+    "family": "Yellows & oranges"
+   },
+   {
+    "name": "Lemon Chiffon",
+    "hex": "#EFDB95",
+    "family": "Yellows & oranges"
+   },
+   {
+    "name": "Apricot",
+    "hex": "#E1A87A",
+    "family": "Yellows & oranges"
+   },
+   {
+    "name": "Peach Sand",
+    "hex": "#E6BE9C",
+    "family": "Yellows & oranges"
+   },
+   {
+    "name": "Ochre",
+    "hex": "#B9883E",
+    "family": "Yellows & oranges"
+   },
+   {
+    "name": "Sage Green",
+    "hex": "#9DAE8F",
+    "family": "Greens"
+   },
+   {
+    "name": "Olive Grove",
+    "hex": "#7F8758",
+    "family": "Greens"
+   },
+   {
+    "name": "Moss",
+    "hex": "#6F7A55",
+    "family": "Greens"
+   },
+   {
+    "name": "Pista",
+    "hex": "#B9C59A",
+    "family": "Greens"
+   },
+   {
+    "name": "Mint Leaf",
+    "hex": "#A7C2AB",
+    "family": "Greens"
+   },
+   {
+    "name": "Eucalyptus",
+    "hex": "#8FA596",
+    "family": "Greens"
+   },
+   {
+    "name": "Forest",
+    "hex": "#4C5E48",
+    "family": "Greens"
+   },
+   {
+    "name": "Bottle Green",
+    "hex": "#3E5547",
+    "family": "Greens"
+   },
+   {
+    "name": "Celadon",
+    "hex": "#B6C7B0",
+    "family": "Greens"
+   },
+   {
+    "name": "Fern",
+    "hex": "#7E9670",
+    "family": "Greens"
+   },
+   {
+    "name": "Sea Green",
+    "hex": "#6F9488",
+    "family": "Greens"
+   },
+   {
+    "name": "Neem",
+    "hex": "#5F7350",
+    "family": "Greens"
+   },
+   {
+    "name": "Ocean Blue",
+    "hex": "#4F7090",
+    "family": "Blues"
+   },
+   {
+    "name": "Indigo Night",
+    "hex": "#2F3E59",
+    "family": "Blues"
+   },
+   {
+    "name": "Denim",
+    "hex": "#566F8C",
+    "family": "Blues"
+   },
+   {
+    "name": "Powder Blue",
+    "hex": "#B5C6D3",
+    "family": "Blues"
+   },
+   {
+    "name": "Sky Haze",
+    "hex": "#A9BED0",
+    "family": "Blues"
+   },
+   {
+    "name": "Steel Blue",
+    "hex": "#5E7A92",
+    "family": "Blues"
+   },
+   {
+    "name": "Teal Lagoon",
+    "hex": "#3F6E73",
+    "family": "Blues"
+   },
+   {
+    "name": "Peacock",
+    "hex": "#2F5E66",
+    "family": "Blues"
+   },
+   {
+    "name": "Slate Blue",
+    "hex": "#6B7F93",
+    "family": "Blues"
+   },
+   {
+    "name": "Navy",
+    "hex": "#2A3449",
+    "family": "Blues"
+   },
+   {
+    "name": "Aqua Mist",
+    "hex": "#A9C7C5",
+    "family": "Blues"
+   },
+   {
+    "name": "Dusk Blue",
+    "hex": "#7D8FA6",
+    "family": "Blues"
+   },
+   {
+    "name": "Slate Grey",
+    "hex": "#6C7176",
+    "family": "Greys"
+   },
+   {
+    "name": "Dove Grey",
+    "hex": "#B3B2AC",
+    "family": "Greys"
+   },
+   {
+    "name": "Silver Fog",
+    "hex": "#C7C8C4",
+    "family": "Greys"
+   },
+   {
+    "name": "Ash",
+    "hex": "#A3A29C",
+    "family": "Greys"
+   },
+   {
+    "name": "Pewter",
+    "hex": "#8C8D88",
+    "family": "Greys"
+   },
+   {
+    "name": "Concrete",
+    "hex": "#9E9C95",
+    "family": "Greys"
+   },
+   {
+    "name": "Stone Grey",
+    "hex": "#9A9890",
+    "family": "Greys"
+   },
+   {
+    "name": "Warm Grey",
+    "hex": "#A69E94",
+    "family": "Greys"
+   },
+   {
+    "name": "Greige",
+    "hex": "#B7AFA3",
+    "family": "Greys"
+   },
+   {
+    "name": "Smoke",
+    "hex": "#7E7F7B",
+    "family": "Greys"
+   },
+   {
+    "name": "Elephant Grey",
+    "hex": "#77746E",
+    "family": "Greys"
+   },
+   {
+    "name": "Fossil",
+    "hex": "#B9B4AA",
+    "family": "Greys"
+   },
+   {
+    "name": "Charcoal",
+    "hex": "#3C4044",
+    "family": "Charcoals & darks"
+   },
+   {
+    "name": "Graphite",
+    "hex": "#55585B",
+    "family": "Charcoals & darks"
+   },
+   {
+    "name": "Gunmetal",
+    "hex": "#4A4F53",
+    "family": "Charcoals & darks"
+   },
+   {
+    "name": "Onyx",
+    "hex": "#2C2E30",
+    "family": "Charcoals & darks"
+   },
+   {
+    "name": "Basalt",
+    "hex": "#3F3D3A",
+    "family": "Charcoals & darks"
+   },
+   {
+    "name": "Iron",
+    "hex": "#4E4C49",
+    "family": "Charcoals & darks"
+   },
+   {
+    "name": "Ebony",
+    "hex": "#2E2A27",
+    "family": "Charcoals & darks"
+   },
+   {
+    "name": "Midnight",
+    "hex": "#262B33",
+    "family": "Charcoals & darks"
+   },
+   {
+    "name": "Anthracite",
+    "hex": "#383B3D",
+    "family": "Charcoals & darks"
+   },
+   {
+    "name": "Soot",
+    "hex": "#323232",
+    "family": "Charcoals & darks"
+   },
+   {
+    "name": "Deep Olive",
+    "hex": "#3F4234",
+    "family": "Charcoals & darks"
+   },
+   {
+    "name": "Espresso",
+    "hex": "#3B2F28",
+    "family": "Charcoals & darks"
+   }
+  ],
+  "metal": [
+   {
+    "name": "Deep Teal",
+    "hex": "#2F3A3F",
+    "family": "Enamel"
+   },
+   {
+    "name": "Jet Black",
+    "hex": "#1F2022",
+    "family": "Enamel"
+   },
+   {
+    "name": "Bronze Brown",
+    "hex": "#5B3F2C",
+    "family": "Enamel"
+   },
+   {
+    "name": "Smoke Grey",
+    "hex": "#7A7F84",
+    "family": "Enamel"
+   },
+   {
+    "name": "Ivory",
+    "hex": "#E8E0CF",
+    "family": "Enamel"
+   },
+   {
+    "name": "Bus Green",
+    "hex": "#2E4A3A",
+    "family": "Enamel"
+   },
+   {
+    "name": "Royal Blue",
+    "hex": "#2B4A7A",
+    "family": "Enamel"
+   },
+   {
+    "name": "Signal Red",
+    "hex": "#8E2A23",
+    "family": "Enamel"
+   },
+   {
+    "name": "Silver",
+    "hex": "#B7BBBE",
+    "family": "Enamel"
+   },
+   {
+    "name": "Golden Brown",
+    "hex": "#8A6234",
+    "family": "Enamel"
+   }
+  ],
+  "acp": [
+   {
+    "name": "Charcoal Grey",
+    "hex": "#3A3D40",
+    "family": "Solid"
+   },
+   {
+    "name": "Signal White",
+    "hex": "#EFEFEC",
+    "family": "Solid"
+   },
+   {
+    "name": "Champagne",
+    "hex": "#C9B48E",
+    "family": "Metallic"
+   },
+   {
+    "name": "Metallic Silver",
+    "hex": "#B8BCBF",
+    "family": "Metallic"
+   },
+   {
+    "name": "Bronze",
+    "hex": "#6E5440",
+    "family": "Metallic"
+   },
+   {
+    "name": "Jet Black",
+    "hex": "#222426",
+    "family": "Solid"
+   },
+   {
+    "name": "Copper",
+    "hex": "#9A5B3A",
+    "family": "Metallic"
+   },
+   {
+    "name": "Grey Blue",
+    "hex": "#5B6B78",
+    "family": "Solid"
+   },
+   {
+    "name": "Ivory",
+    "hex": "#E6DFCD",
+    "family": "Solid"
+   },
+   {
+    "name": "Brushed Gold",
+    "hex": "#B8975A",
+    "family": "Metallic"
+   }
+  ],
+  "hpl": [
+   {
+    "name": "Teak Wood",
+    "hex": "#9A6236",
+    "family": "Wood"
+   },
+   {
+    "name": "Walnut",
+    "hex": "#6B4429",
+    "family": "Wood"
+   },
+   {
+    "name": "Oak",
+    "hex": "#B9844F",
+    "family": "Wood"
+   },
+   {
+    "name": "Concrete Grey",
+    "hex": "#8E8C86",
+    "family": "Solid"
+   },
+   {
+    "name": "Anthracite",
+    "hex": "#3A3C3E",
+    "family": "Solid"
+   },
+   {
+    "name": "Sand Beige",
+    "hex": "#CDB896",
+    "family": "Solid"
+   },
+   {
+    "name": "Terracotta",
+    "hex": "#A8603F",
+    "family": "Solid"
+   },
+   {
+    "name": "Off White",
+    "hex": "#E9E6DF",
+    "family": "Solid"
+   }
+  ],
+  "wpc": [
+   {
+    "name": "Teak",
+    "hex": "#9A6236",
+    "family": "Wood"
+   },
+   {
+    "name": "Walnut",
+    "hex": "#6B4429",
+    "family": "Wood"
+   },
+   {
+    "name": "Wenge",
+    "hex": "#3E2B22",
+    "family": "Wood"
+   },
+   {
+    "name": "Honey Oak",
+    "hex": "#B9844F",
+    "family": "Wood"
+   },
+   {
+    "name": "Ash Grey",
+    "hex": "#8E8A83",
+    "family": "Wood"
+   },
+   {
+    "name": "Coffee",
+    "hex": "#5A3D2B",
+    "family": "Wood"
+   }
+  ],
+  "texture": [
+   {
+    "name": "Sand",
+    "hex": "#D8CBB4",
+    "family": "Texture"
+   },
+   {
+    "name": "Stone Grey",
+    "hex": "#9A9890",
+    "family": "Texture"
+   },
+   {
+    "name": "Ochre",
+    "hex": "#C79A57",
+    "family": "Texture"
+   },
+   {
+    "name": "Clay",
+    "hex": "#B07B5E",
+    "family": "Texture"
+   },
+   {
+    "name": "Graphite",
+    "hex": "#55585B",
+    "family": "Texture"
+   },
+   {
+    "name": "Ivory",
+    "hex": "#E6DCC6",
+    "family": "Texture"
+   },
+   {
+    "name": "Sage",
+    "hex": "#A3AE95",
+    "family": "Texture"
+   },
+   {
+    "name": "Terracotta",
+    "hex": "#B4704F",
+    "family": "Texture"
+   }
+  ]
+ },
+ "materials": [
+  {
+   "id": "ap_ace",
+   "name": "Asian Paints Ace Exterior Emulsion",
+   "brand": "Asian Paints",
+   "product": "Ace Exterior Emulsion",
+   "tier": "economy",
+   "category": "Exterior paint",
+   "calc": "paint",
+   "rate": 230,
+   "rate_range": [
+    200,
+    270
+   ],
+   "rate_unit": "L",
+   "labour_rate": 13,
+   "labour_range": [
+    10,
+    16
+   ],
+   "labour_unit": "sqft",
+   "waste_pct": 5,
+   "coverage_sqft_per_l_per_coat": 80,
+   "primer_coverage_sqft_per_l": 100,
+   "primer_rate": 190,
+   "pack_sizes_l": [
+    20,
+    10,
+    4,
+    1
+   ],
+   "warranty_years": 3,
+   "durability": "3+ years",
+   "maintenance": "Repaint in about 4-5 years.",
+   "pros": [
+    "Lowest cost",
+    "Good for rental/compound walls"
+   ],
+   "cons": [
+    "Shorter life, fades sooner",
+    "Limited dirt resistance"
+   ],
+   "suitable_for": [
+    "wall",
+    "parapet",
+    "pillar",
+    "balcony",
+    "roof_edge"
+   ],
+   "render": {
+    "mode": "tint",
+    "texture": "plaster-fine.jpg",
+    "tile_ft": 6,
+    "strength": 0.15
+   },
+   "palette": "exterior",
+   "default_color": "#EDE4D3",
+   "specs": [
+    "Practical coverage ~80 sqft/L per coat on primed plaster",
+    "System: 1 coat exterior primer + top coats"
+   ]
+  },
+  {
+   "id": "ap_apex",
+   "name": "Asian Paints Apex Weatherproof Emulsion",
+   "brand": "Asian Paints",
+   "product": "Apex Weatherproof Emulsion",
+   "tier": "standard",
+   "category": "Exterior paint",
+   "calc": "paint",
+   "rate": 340,
+   "rate_range": [
+    300,
+    390
+   ],
+   "rate_unit": "L",
+   "labour_rate": 14,
+   "labour_range": [
+    11,
+    17
+   ],
+   "labour_unit": "sqft",
+   "waste_pct": 5,
+   "coverage_sqft_per_l_per_coat": 90,
+   "primer_coverage_sqft_per_l": 100,
+   "primer_rate": 190,
+   "pack_sizes_l": [
+    20,
+    10,
+    4,
+    1
+   ],
+   "warranty_years": 5,
+   "durability": "5+ years",
+   "maintenance": "Wash yearly; repaint in about 6 years.",
+   "pros": [
+    "Proven weatherproof emulsion",
+    "Good value"
+   ],
+   "cons": [
+    "Average dirt pick-up resistance"
+   ],
+   "suitable_for": [
+    "wall",
+    "parapet",
+    "pillar",
+    "balcony",
+    "roof_edge"
+   ],
+   "render": {
+    "mode": "tint",
+    "texture": "plaster-fine.jpg",
+    "tile_ft": 6,
+    "strength": 0.15
+   },
+   "palette": "exterior",
+   "default_color": "#EDE4D3",
+   "specs": [
+    "Practical coverage ~90 sqft/L per coat on primed plaster",
+    "System: 1 coat exterior primer + top coats"
+   ]
+  },
+  {
+   "id": "ap_apex_ultima",
+   "name": "Asian Paints Apex Ultima",
+   "brand": "Asian Paints",
+   "product": "Apex Ultima",
+   "tier": "premium",
+   "category": "Exterior paint",
+   "calc": "paint",
+   "rate": 480,
+   "rate_range": [
+    430,
+    560
+   ],
+   "rate_unit": "L",
+   "labour_rate": 15,
+   "labour_range": [
+    12,
+    18
+   ],
+   "labour_unit": "sqft",
+   "waste_pct": 5,
+   "coverage_sqft_per_l_per_coat": 100,
+   "primer_coverage_sqft_per_l": 100,
+   "primer_rate": 190,
+   "pack_sizes_l": [
+    20,
+    10,
+    4,
+    1
+   ],
+   "warranty_years": 7,
+   "durability": "7+ years",
+   "maintenance": "Wash yearly; repaint in about 7-8 years.",
+   "pros": [
+    "Better sheen and colour retention",
+    "Anti-algal"
+   ],
+   "cons": [
+    "Higher cost"
+   ],
+   "suitable_for": [
+    "wall",
+    "parapet",
+    "pillar",
+    "balcony",
+    "roof_edge"
+   ],
+   "render": {
+    "mode": "tint",
+    "texture": "plaster-fine.jpg",
+    "tile_ft": 6,
+    "strength": 0.15
+   },
+   "palette": "exterior",
+   "default_color": "#EDE4D3",
+   "specs": [
+    "Practical coverage ~100 sqft/L per coat on primed plaster",
+    "System: 1 coat exterior primer + top coats"
+   ]
+  },
+  {
+   "id": "ap_ultima_protek",
+   "name": "Asian Paints Apex Ultima Protek (system)",
+   "brand": "Asian Paints",
+   "product": "Apex Ultima Protek (system)",
+   "tier": "luxury",
+   "category": "Exterior paint",
+   "calc": "paint",
+   "rate": 560,
+   "rate_range": [
+    520,
+    620
+   ],
+   "rate_unit": "L",
+   "labour_rate": 18,
+   "labour_range": [
+    15,
+    22
+   ],
+   "labour_unit": "sqft",
+   "waste_pct": 5,
+   "coverage_sqft_per_l_per_coat": 110,
+   "primer_coverage_sqft_per_l": 100,
+   "primer_rate": 190,
+   "pack_sizes_l": [
+    20,
+    10,
+    4,
+    1
+   ],
+   "warranty_years": 10,
+   "durability": "10-15 years (claimed)",
+   "maintenance": "Wash yearly; long repaint cycle (10+ years claimed).",
+   "pros": [
+    "Elastomeric base coat bridges hairline cracks",
+    "Longest-life system"
+   ],
+   "cons": [
+    "Most expensive",
+    "Needs trained applicators"
+   ],
+   "suitable_for": [
+    "wall",
+    "parapet",
+    "pillar",
+    "balcony",
+    "roof_edge"
+   ],
+   "render": {
+    "mode": "tint",
+    "texture": "plaster-fine.jpg",
+    "tile_ft": 6,
+    "strength": 0.15
+   },
+   "palette": "exterior",
+   "default_color": "#EDE4D3",
+   "specs": [
+    "Practical coverage ~110 sqft/L per coat on primed plaster",
+    "System: 1 coat primer + 1 coat elastomeric base coat + top coats"
+   ],
+   "basecoat_rate": 420,
+   "basecoat_coverage_sqft_per_l": 80
+  },
+  {
+   "id": "berger_weathercoat_ll",
+   "name": "Berger WeatherCoat Long Life",
+   "brand": "Berger",
+   "product": "WeatherCoat Long Life",
+   "tier": "premium",
+   "category": "Exterior paint",
+   "calc": "paint",
+   "rate": 440,
+   "rate_range": [
+    400,
+    520
+   ],
+   "rate_unit": "L",
+   "labour_rate": 15,
+   "labour_range": [
+    12,
+    18
+   ],
+   "labour_unit": "sqft",
+   "waste_pct": 5,
+   "coverage_sqft_per_l_per_coat": 100,
+   "primer_coverage_sqft_per_l": 100,
+   "primer_rate": 190,
+   "pack_sizes_l": [
+    20,
+    10,
+    4,
+    1
+   ],
+   "warranty_years": null,
+   "durability": "5-7 years",
+   "maintenance": "Wash yearly; repaint in about 7 years.",
+   "pros": [
+    "Strong weather resistance",
+    "Wide colour range"
+   ],
+   "cons": [
+    "Warranty terms vary by variant"
+   ],
+   "suitable_for": [
+    "wall",
+    "parapet",
+    "pillar",
+    "balcony",
+    "roof_edge"
+   ],
+   "render": {
+    "mode": "tint",
+    "texture": "plaster-fine.jpg",
+    "tile_ft": 6,
+    "strength": 0.15
+   },
+   "palette": "exterior",
+   "default_color": "#EDE4D3",
+   "specs": [
+    "Practical coverage ~100 sqft/L per coat on primed plaster",
+    "System: 1 coat exterior primer + top coats"
+   ]
+  },
+  {
+   "id": "nerolac_excel_total",
+   "name": "Nerolac Excel Total",
+   "brand": "Nerolac",
+   "product": "Excel Total",
+   "tier": "premium",
+   "category": "Exterior paint",
+   "calc": "paint",
+   "rate": 420,
+   "rate_range": [
+    380,
+    500
+   ],
+   "rate_unit": "L",
+   "labour_rate": 15,
+   "labour_range": [
+    12,
+    18
+   ],
+   "labour_unit": "sqft",
+   "waste_pct": 5,
+   "coverage_sqft_per_l_per_coat": 100,
+   "primer_coverage_sqft_per_l": 100,
+   "primer_rate": 190,
+   "pack_sizes_l": [
+    20,
+    10,
+    4,
+    1
+   ],
+   "warranty_years": null,
+   "durability": "5-7 years",
+   "maintenance": "Wash yearly; repaint in about 7 years.",
+   "pros": [
+    "All-in-one weather protection",
+    "Good dirt resistance"
+   ],
+   "cons": [
+    "Warranty terms vary by variant"
+   ],
+   "suitable_for": [
+    "wall",
+    "parapet",
+    "pillar",
+    "balcony",
+    "roof_edge"
+   ],
+   "render": {
+    "mode": "tint",
+    "texture": "plaster-fine.jpg",
+    "tile_ft": 6,
+    "strength": 0.15
+   },
+   "palette": "exterior",
+   "default_color": "#EDE4D3",
+   "specs": [
+    "Practical coverage ~100 sqft/L per coat on primed plaster",
+    "System: 1 coat exterior primer + top coats"
+   ]
+  },
+  {
+   "id": "dulux_weathershield_max",
+   "name": "Dulux Weathershield Max",
+   "brand": "Dulux",
+   "product": "Weathershield Max",
+   "tier": "premium",
+   "category": "Exterior paint",
+   "calc": "paint",
+   "rate": 500,
+   "rate_range": [
+    450,
+    580
+   ],
+   "rate_unit": "L",
+   "labour_rate": 15,
+   "labour_range": [
+    12,
+    18
+   ],
+   "labour_unit": "sqft",
+   "waste_pct": 5,
+   "coverage_sqft_per_l_per_coat": 105,
+   "primer_coverage_sqft_per_l": 100,
+   "primer_rate": 190,
+   "pack_sizes_l": [
+    20,
+    10,
+    4,
+    1
+   ],
+   "warranty_years": null,
+   "durability": "5-7 years",
+   "maintenance": "Wash yearly; repaint in about 8 years.",
+   "pros": [
+    "High dirt and algae resistance",
+    "Good colour retention"
+   ],
+   "cons": [
+    "Premium price"
+   ],
+   "suitable_for": [
+    "wall",
+    "parapet",
+    "pillar",
+    "balcony",
+    "roof_edge"
+   ],
+   "render": {
+    "mode": "tint",
+    "texture": "plaster-fine.jpg",
+    "tile_ft": 6,
+    "strength": 0.15
+   },
+   "palette": "exterior",
+   "default_color": "#EDE4D3",
+   "specs": [
+    "Practical coverage ~105 sqft/L per coat on primed plaster",
+    "System: 1 coat exterior primer + top coats"
+   ]
+  },
+  {
+   "id": "texture_roller",
+   "name": "Textured coating (roller / scratch)",
+   "brand": null,
+   "product": null,
+   "tier": "standard",
+   "category": "Texture & special finishes",
+   "calc": "texture",
+   "rate": 45,
+   "rate_range": [
+    38,
+    60
+   ],
+   "rate_unit": "kg",
+   "labour_rate": 22,
+   "labour_range": [
+    18,
+    30
+   ],
+   "labour_unit": "sqft",
+   "waste_pct": 8,
+   "warranty_years": null,
+   "durability": "8-10 years",
+   "maintenance": "Top coat can be renewed without redoing the texture.",
+   "pros": [
+    "Hides surface imperfections",
+    "Premium look at moderate cost"
+   ],
+   "cons": [
+    "Collects dust in rough patterns"
+   ],
+   "suitable_for": [
+    "wall",
+    "pillar",
+    "parapet",
+    "balcony"
+   ],
+   "render": {
+    "mode": "tint",
+    "texture": "concrete-smooth.jpg",
+    "tile_ft": 4,
+    "strength": 0.55
+   },
+   "palette": "texture",
+   "default_color": "#D8CBB4",
+   "specs": [
+    "~0.15 kg/sqft",
+    "Finished with 2 coats of exterior emulsion"
+   ],
+   "kg_per_sqft": 0.15,
+   "bag_kg": 25
+  },
+  {
+   "id": "stone_spray",
+   "name": "Spray stone-finish coating (granite look)",
+   "brand": null,
+   "product": null,
+   "tier": "premium",
+   "category": "Texture & special finishes",
+   "calc": "area",
+   "rate": 55,
+   "rate_range": [
+    45,
+    80
+   ],
+   "rate_unit": "sqft",
+   "labour_rate": 28,
+   "labour_range": [
+    22,
+    35
+   ],
+   "labour_unit": "sqft",
+   "waste_pct": 7,
+   "warranty_years": null,
+   "durability": "10-12 years",
+   "maintenance": "Wash occasionally.",
+   "pros": [
+    "Stone look at a fraction of the weight",
+    "Seamless"
+   ],
+   "cons": [
+    "Spray equipment and skilled crew needed"
+   ],
+   "suitable_for": [
+    "wall",
+    "pillar",
+    "parapet",
+    "balcony"
+   ],
+   "render": {
+    "mode": "texture",
+    "texture": "granite.jpg",
+    "tile_ft": 3
+   },
+   "palette": null,
+   "default_color": null,
+   "specs": [
+    "Sprayed in 2-3 mm"
+   ]
+  },
+  {
+   "id": "microcement",
+   "name": "Exposed-concrete (microcement) finish",
+   "brand": null,
+   "product": null,
+   "tier": "premium",
+   "category": "Texture & special finishes",
+   "calc": "area",
+   "rate": 120,
+   "rate_range": [
+    100,
+    160
+   ],
+   "rate_unit": "sqft",
+   "labour_rate": 70,
+   "labour_range": [
+    55,
+    90
+   ],
+   "labour_unit": "sqft",
+   "waste_pct": 7,
+   "warranty_years": null,
+   "durability": "10-15 years",
+   "maintenance": "Reseal every 2-3 years.",
+   "pros": [
+    "Seamless industrial look"
+   ],
+   "cons": [
+    "Hairline cracks can show"
+   ],
+   "suitable_for": [
+    "wall",
+    "pillar",
+    "parapet",
+    "balcony",
+    "roof_edge"
+   ],
+   "render": {
+    "mode": "texture",
+    "texture": "concrete-smooth.jpg",
+    "tile_ft": 6
+   },
+   "palette": null,
+   "default_color": null,
+   "specs": [
+    "2-3 mm trowelled layers + sealer"
+   ]
+  },
+  {
+   "id": "stone_jaisalmer",
+   "name": "Jaisalmer yellow sandstone (natural split)",
+   "brand": null,
+   "product": null,
+   "tier": "premium",
+   "category": "Stone cladding",
+   "calc": "cladding",
+   "rate": 140,
+   "rate_range": [
+    110,
+    180
+   ],
+   "rate_unit": "sqft",
+   "labour_rate": 75,
+   "labour_range": [
+    60,
+    90
+   ],
+   "labour_unit": "sqft",
+   "waste_pct": 10,
+   "warranty_years": null,
+   "durability": "25+ years",
+   "maintenance": "Seal every 3-4 years to avoid staining.",
+   "pros": [
+    "Warm golden tone",
+    "Very long life"
+   ],
+   "cons": [
+    "Porous: needs sealing",
+    "Heavy"
+   ],
+   "suitable_for": [
+    "wall",
+    "pillar",
+    "parapet",
+    "balcony"
+   ],
+   "render": {
+    "mode": "texture",
+    "texture": "stone-sandstone.jpg",
+    "tile_ft": 4.5,
+    "tint": "#F0D9A8"
+   },
+   "palette": null,
+   "default_color": null,
+   "specs": [
+    "20-25 mm natural split strips",
+    "Fixed with polymer stone adhesive"
+   ],
+   "adhesive_sqft_per_bag": 30,
+   "adhesive_rate": 480
+  },
+  {
+   "id": "stone_dholpur",
+   "name": "Dholpur beige sandstone",
+   "brand": null,
+   "product": null,
+   "tier": "standard",
+   "category": "Stone cladding",
+   "calc": "cladding",
+   "rate": 115,
+   "rate_range": [
+    90,
+    140
+   ],
+   "rate_unit": "sqft",
+   "labour_rate": 70,
+   "labour_range": [
+    60,
+    85
+   ],
+   "labour_unit": "sqft",
+   "waste_pct": 10,
+   "warranty_years": null,
+   "durability": "25+ years",
+   "maintenance": "Seal every 3-4 years.",
+   "pros": [
+    "Soft neutral beige",
+    "Classic heritage look"
+   ],
+   "cons": [
+    "Shows dirt if unsealed"
+   ],
+   "suitable_for": [
+    "wall",
+    "pillar",
+    "parapet",
+    "balcony"
+   ],
+   "render": {
+    "mode": "texture",
+    "texture": "stone-sandstone.jpg",
+    "tile_ft": 5,
+    "tint": "#E9DCC6"
+   },
+   "palette": null,
+   "default_color": null,
+   "specs": [
+    "20-25 mm cladding strips"
+   ],
+   "adhesive_sqft_per_bag": 30,
+   "adhesive_rate": 480
+  },
+  {
+   "id": "stone_kota",
+   "name": "Kota blue limestone",
+   "brand": null,
+   "product": null,
+   "tier": "economy",
+   "category": "Stone cladding",
+   "calc": "cladding",
+   "rate": 65,
+   "rate_range": [
+    55,
+    85
+   ],
+   "rate_unit": "sqft",
+   "labour_rate": 65,
+   "labour_range": [
+    55,
+    80
+   ],
+   "labour_unit": "sqft",
+   "waste_pct": 8,
+   "warranty_years": null,
+   "durability": "25+ years",
+   "maintenance": "Low maintenance; occasional wash.",
+   "pros": [
+    "Economical natural stone",
+    "Durable, cool grey-blue"
+   ],
+   "cons": [
+    "Plain look unless textured"
+   ],
+   "suitable_for": [
+    "wall",
+    "pillar",
+    "parapet",
+    "balcony"
+   ],
+   "render": {
+    "mode": "texture",
+    "texture": "kota.jpg",
+    "tile_ft": 6
+   },
+   "palette": null,
+   "default_color": null,
+   "specs": [
+    "Cut panels, 20-25 mm"
+   ],
+   "adhesive_sqft_per_bag": 35,
+   "adhesive_rate": 480
+  },
+  {
+   "id": "stone_slate",
+   "name": "Multicolour slate cladding",
+   "brand": null,
+   "product": null,
+   "tier": "standard",
+   "category": "Stone cladding",
+   "calc": "cladding",
+   "rate": 90,
+   "rate_range": [
+    70,
+    120
+   ],
+   "rate_unit": "sqft",
+   "labour_rate": 75,
+   "labour_range": [
+    60,
+    90
+   ],
+   "labour_unit": "sqft",
+   "waste_pct": 10,
+   "warranty_years": null,
+   "durability": "25+ years",
+   "maintenance": "Wash occasionally; joints can trap dirt.",
+   "pros": [
+    "Rich layered colours",
+    "Rustic texture"
+   ],
+   "cons": [
+    "Flaky edges need careful fixing"
+   ],
+   "suitable_for": [
+    "wall",
+    "pillar",
+    "parapet",
+    "balcony"
+   ],
+   "render": {
+    "mode": "texture",
+    "texture": "stone-grey.jpg",
+    "tile_ft": 5
+   },
+   "palette": null,
+   "default_color": null,
+   "specs": [
+    "Natural split strips"
+   ],
+   "adhesive_sqft_per_bag": 30,
+   "adhesive_rate": 480
+  },
+  {
+   "id": "stone_ledge",
+   "name": "Ledge-stone panels (stacked, charcoal)",
+   "brand": null,
+   "product": null,
+   "tier": "luxury",
+   "category": "Stone cladding",
+   "calc": "cladding",
+   "rate": 190,
+   "rate_range": [
+    160,
+    240
+   ],
+   "rate_unit": "sqft",
+   "labour_rate": 70,
+   "labour_range": [
+    60,
+    85
+   ],
+   "labour_unit": "sqft",
+   "waste_pct": 8,
+   "warranty_years": null,
+   "durability": "25+ years",
+   "maintenance": "Low maintenance.",
+   "pros": [
+    "Dramatic stacked-stone look",
+    "Fast to install as panels"
+   ],
+   "cons": [
+    "Premium price"
+   ],
+   "suitable_for": [
+    "wall",
+    "pillar",
+    "parapet",
+    "balcony"
+   ],
+   "render": {
+    "mode": "texture",
+    "texture": "stone-sandstone.jpg",
+    "tile_ft": 4,
+    "tint": "#8A8580"
+   },
+   "palette": null,
+   "default_color": null,
+   "specs": [
+    "Interlocking 150 x 600 mm panels"
+   ],
+   "adhesive_sqft_per_bag": 30,
+   "adhesive_rate": 480
+  },
+  {
+   "id": "granite_cladding",
+   "name": "Granite cladding (flamed, grey)",
+   "brand": null,
+   "product": null,
+   "tier": "luxury",
+   "category": "Stone cladding",
+   "calc": "cladding",
+   "rate": 180,
+   "rate_range": [
+    150,
+    250
+   ],
+   "rate_unit": "sqft",
+   "labour_rate": 90,
+   "labour_range": [
+    75,
+    110
+   ],
+   "labour_unit": "sqft",
+   "waste_pct": 8,
+   "warranty_years": null,
+   "durability": "30+ years",
+   "maintenance": "Practically maintenance-free.",
+   "pros": [
+    "Hardest-wearing option",
+    "Stain resistant"
+   ],
+   "cons": [
+    "Heaviest; needs mechanical clamps above ground floor"
+   ],
+   "suitable_for": [
+    "wall",
+    "pillar",
+    "parapet",
+    "balcony"
+   ],
+   "render": {
+    "mode": "tiles",
+    "texture": "granite.jpg",
+    "tile_ft": 4,
+    "joint_w_ft": 2,
+    "joint_h_ft": 1
+   },
+   "palette": null,
+   "default_color": null,
+   "specs": [
+    "18-20 mm flamed slabs 600 x 300 mm"
+   ],
+   "adhesive_sqft_per_bag": 25,
+   "adhesive_rate": 520
+  },
+  {
+   "id": "gvt_300x600",
+   "name": "GVT elevation tiles 300 x 600 mm (stone look)",
+   "brand": null,
+   "product": null,
+   "tier": "standard",
+   "category": "Elevation tiles",
+   "calc": "tiles",
+   "rate": 55,
+   "rate_range": [
+    45,
+    70
+   ],
+   "rate_unit": "sqft",
+   "labour_rate": 45,
+   "labour_range": [
+    38,
+    55
+   ],
+   "labour_unit": "sqft",
+   "waste_pct": 8,
+   "warranty_years": null,
+   "durability": "20+ years",
+   "maintenance": "Wipe clean; check grout every few years.",
+   "pros": [
+    "Easy to clean",
+    "Doesn't fade"
+   ],
+   "cons": [
+    "Grid look can feel busy"
+   ],
+   "suitable_for": [
+    "wall",
+    "pillar",
+    "parapet",
+    "balcony"
+   ],
+   "render": {
+    "mode": "tiles",
+    "texture": "travertine.jpg",
+    "tile_ft": 6,
+    "joint_w_ft": 2,
+    "joint_h_ft": 1,
+    "tint": "#D9D3C8"
+   },
+   "palette": null,
+   "default_color": null,
+   "specs": [
+    "Glazed vitrified, 8-9 mm"
+   ],
+   "tile_w_ft": 1.97,
+   "tile_h_ft": 0.98,
+   "tiles_per_box": 8,
+   "adhesive_sqft_per_bag": 40,
+   "adhesive_rate": 480
+  },
+  {
+   "id": "gvt_600x1200",
+   "name": "GVT elevation tiles 600 x 1200 mm (travertine look)",
+   "brand": null,
+   "product": null,
+   "tier": "premium",
+   "category": "Elevation tiles",
+   "calc": "tiles",
+   "rate": 90,
+   "rate_range": [
+    70,
+    120
+   ],
+   "rate_unit": "sqft",
+   "labour_rate": 55,
+   "labour_range": [
+    45,
+    70
+   ],
+   "labour_unit": "sqft",
+   "waste_pct": 8,
+   "warranty_years": null,
+   "durability": "20+ years",
+   "maintenance": "Wipe clean; check edge adhesion.",
+   "pros": [
+    "Large seamless look",
+    "Premium finish"
+   ],
+   "cons": [
+    "Needs skilled fixing at height",
+    "Heavier panels"
+   ],
+   "suitable_for": [
+    "wall",
+    "pillar",
+    "parapet",
+    "balcony"
+   ],
+   "render": {
+    "mode": "tiles",
+    "texture": "travertine.jpg",
+    "tile_ft": 8,
+    "joint_w_ft": 3.94,
+    "joint_h_ft": 1.97
+   },
+   "palette": null,
+   "default_color": null,
+   "specs": [
+    "Glazed vitrified, 9-10 mm"
+   ],
+   "tile_w_ft": 3.94,
+   "tile_h_ft": 1.97,
+   "tiles_per_box": 2,
+   "adhesive_sqft_per_bag": 35,
+   "adhesive_rate": 480
+  },
+  {
+   "id": "tile_wood_finish",
+   "name": "Wood-finish elevation tiles 200 x 1200 mm",
+   "brand": null,
+   "product": null,
+   "tier": "standard",
+   "category": "Elevation tiles",
+   "calc": "tiles",
+   "rate": 75,
+   "rate_range": [
+    60,
+    100
+   ],
+   "rate_unit": "sqft",
+   "labour_rate": 55,
+   "labour_range": [
+    45,
+    70
+   ],
+   "labour_unit": "sqft",
+   "waste_pct": 10,
+   "warranty_years": null,
+   "durability": "20+ years",
+   "maintenance": "Wipe clean.",
+   "pros": [
+    "Wood look with tile durability",
+    "No termites, no fading"
+   ],
+   "cons": [
+    "Joints visible up close"
+   ],
+   "suitable_for": [
+    "wall",
+    "pillar",
+    "parapet",
+    "balcony"
+   ],
+   "render": {
+    "mode": "tint",
+    "texture": "wood-siding.jpg",
+    "tile_ft": 6,
+    "strength": 0.9
+   },
+   "palette": "wpc",
+   "default_color": "#9A6236",
+   "specs": [
+    "Glazed vitrified planks"
+   ],
+   "tile_w_ft": 3.94,
+   "tile_h_ft": 0.66,
+   "tiles_per_box": 6,
+   "adhesive_sqft_per_bag": 40,
+   "adhesive_rate": 480
+  },
+  {
+   "id": "brick_tiles",
+   "name": "Clay brick cladding tiles (wire-cut)",
+   "brand": null,
+   "product": null,
+   "tier": "standard",
+   "category": "Elevation tiles",
+   "calc": "cladding",
+   "rate": 95,
+   "rate_range": [
+    80,
+    140
+   ],
+   "rate_unit": "sqft",
+   "labour_rate": 55,
+   "labour_range": [
+    45,
+    70
+   ],
+   "labour_unit": "sqft",
+   "waste_pct": 8,
+   "warranty_years": null,
+   "durability": "25+ years",
+   "maintenance": "Apply water-repellent every 3-5 years.",
+   "pros": [
+    "Classic exposed-brick look",
+    "Lighter than full bricks"
+   ],
+   "cons": [
+    "Can effloresce without sealing"
+   ],
+   "suitable_for": [
+    "wall",
+    "pillar",
+    "parapet"
+   ],
+   "render": {
+    "mode": "texture",
+    "texture": "brick-red.jpg",
+    "tile_ft": 4.5
+   },
+   "palette": null,
+   "default_color": null,
+   "specs": [
+    "15-20 mm clay slips"
+   ],
+   "adhesive_sqft_per_bag": 35,
+   "adhesive_rate": 480
+  },
+  {
+   "id": "acp_pvdf",
+   "name": "ACP 4 mm PVDF (standard core)",
+   "brand": null,
+   "product": null,
+   "tier": "standard",
+   "category": "Cladding panels",
+   "calc": "sheet",
+   "rate": 150,
+   "rate_range": [
+    130,
+    220
+   ],
+   "rate_unit": "sqft",
+   "labour_rate": 150,
+   "labour_range": [
+    120,
+    200
+   ],
+   "labour_unit": "sqft",
+   "waste_pct": 12,
+   "warranty_years": null,
+   "durability": "15-20 years",
+   "maintenance": "Wash twice a year; check sealant joints.",
+   "pros": [
+    "Sharp contemporary look",
+    "Lightweight"
+   ],
+   "cons": [
+    "Not fire rated: avoid on escape routes"
+   ],
+   "suitable_for": [
+    "wall",
+    "parapet",
+    "roof_edge",
+    "pillar",
+    "balcony"
+   ],
+   "render": {
+    "mode": "panel",
+    "joint_w_ft": 4,
+    "joint_h_ft": 8
+   },
+   "palette": "acp",
+   "default_color": "#3A3D40",
+   "specs": [
+    "4 mm, 0.25 mm aluminium skins, PVDF coat",
+    "Aluminium sub-frame + silicone joints"
+   ],
+   "sheet_sqft": 32
+  },
+  {
+   "id": "acp_fr",
+   "name": "ACP 4 mm PVDF fire-retardant (FR core)",
+   "brand": null,
+   "product": null,
+   "tier": "premium",
+   "category": "Cladding panels",
+   "calc": "sheet",
+   "rate": 230,
+   "rate_range": [
+    200,
+    300
+   ],
+   "rate_unit": "sqft",
+   "labour_rate": 160,
+   "labour_range": [
+    130,
+    210
+   ],
+   "labour_unit": "sqft",
+   "waste_pct": 12,
+   "warranty_years": null,
+   "durability": "15-20 years",
+   "maintenance": "Wash twice a year.",
+   "pros": [
+    "Fire-retardant core (safer)",
+    "Same modern look"
+   ],
+   "cons": [
+    "Costlier than standard ACP"
+   ],
+   "suitable_for": [
+    "wall",
+    "parapet",
+    "roof_edge",
+    "pillar",
+    "balcony"
+   ],
+   "render": {
+    "mode": "panel",
+    "joint_w_ft": 4,
+    "joint_h_ft": 8
+   },
+   "palette": "acp",
+   "default_color": "#C9B48E",
+   "specs": [
+    "FR mineral core",
+    "Aluminium sub-frame"
+   ],
+   "sheet_sqft": 32
+  },
+  {
+   "id": "hpl_exterior",
+   "name": "HPL exterior cladding 6 mm",
+   "brand": null,
+   "product": null,
+   "tier": "luxury",
+   "category": "Cladding panels",
+   "calc": "area",
+   "rate": 320,
+   "rate_range": [
+    250,
+    450
+   ],
+   "rate_unit": "sqft",
+   "labour_rate": 120,
+   "labour_range": [
+    100,
+    160
+   ],
+   "labour_unit": "sqft",
+   "waste_pct": 10,
+   "warranty_years": null,
+   "durability": "20+ years",
+   "maintenance": "Wash occasionally.",
+   "pros": [
+    "UV-stable decors incl. realistic woods",
+    "Very impact resistant"
+   ],
+   "cons": [
+    "Premium price",
+    "Needs ventilated sub-frame"
+   ],
+   "suitable_for": [
+    "wall",
+    "balcony",
+    "pillar",
+    "roof_edge"
+   ],
+   "render": {
+    "mode": "tint",
+    "texture": "wood-siding.jpg",
+    "tile_ft": 8,
+    "strength": 0.6
+   },
+   "palette": "hpl",
+   "default_color": "#9A6236",
+   "specs": [
+    "6 mm compact laminate, UV coated"
+   ]
+  },
+  {
+   "id": "wpc_louvers",
+   "name": "WPC exterior louvers",
+   "brand": null,
+   "product": null,
+   "tier": "standard",
+   "category": "Cladding panels",
+   "calc": "area",
+   "rate": 200,
+   "rate_range": [
+    99,
+    300
+   ],
+   "rate_unit": "sqft",
+   "labour_rate": 80,
+   "labour_range": [
+    60,
+    110
+   ],
+   "labour_unit": "sqft",
+   "waste_pct": 10,
+   "warranty_years": null,
+   "durability": "15+ years",
+   "maintenance": "Wash with mild soap; no polishing.",
+   "pros": [
+    "Warm wooden look",
+    "Termite and water resistant"
+   ],
+   "cons": [
+    "Can fade in harsh sun"
+   ],
+   "suitable_for": [
+    "wall",
+    "pillar",
+    "balcony",
+    "gate",
+    "roof_edge"
+   ],
+   "render": {
+    "mode": "tint",
+    "texture": "wood-siding.jpg",
+    "tile_ft": 6,
+    "strength": 0.9
+   },
+   "palette": "wpc",
+   "default_color": "#9A6236",
+   "specs": [
+    "Co-extruded WPC profiles on aluminium battens"
+   ]
+  },
+  {
+   "id": "fibre_cement",
+   "name": "Fibre-cement siding planks",
+   "brand": null,
+   "product": null,
+   "tier": "standard",
+   "category": "Cladding panels",
+   "calc": "area",
+   "rate": 110,
+   "rate_range": [
+    90,
+    150
+   ],
+   "rate_unit": "sqft",
+   "labour_rate": 70,
+   "labour_range": [
+    55,
+    90
+   ],
+   "labour_unit": "sqft",
+   "waste_pct": 10,
+   "warranty_years": null,
+   "durability": "25+ years",
+   "maintenance": "Repaint every 8-10 years.",
+   "pros": [
+    "Fire resistant, termite proof",
+    "Paintable"
+   ],
+   "cons": [
+    "Needs painting",
+    "Heavier than WPC"
+   ],
+   "suitable_for": [
+    "wall",
+    "parapet",
+    "balcony"
+   ],
+   "render": {
+    "mode": "tint",
+    "texture": "wood-siding.jpg",
+    "tile_ft": 6,
+    "strength": 0.35
+   },
+   "palette": "exterior",
+   "default_color": "#B9A995",
+   "specs": [
+    "8 mm planks, pre-primed"
+   ]
+  },
+  {
+   "id": "rail_glass_frameless",
+   "name": "Frameless glass railing (U-channel, 12 mm)",
+   "brand": null,
+   "product": null,
+   "tier": "luxury",
+   "category": "Railings",
+   "calc": "railing",
+   "rate": 1950,
+   "rate_range": [
+    1550,
+    2450
+   ],
+   "rate_unit": "rft",
+   "labour_rate": 350,
+   "labour_range": [
+    300,
+    450
+   ],
+   "labour_unit": "rft",
+   "waste_pct": 3,
+   "warranty_years": null,
+   "durability": "20+ years",
+   "maintenance": "Clean glass monthly; check channel sealant yearly.",
+   "pros": [
+    "Unobstructed view",
+    "Most premium look"
+   ],
+   "cons": [
+    "Highest cost",
+    "Shows water spots"
+   ],
+   "suitable_for": [
+    "railing"
+   ],
+   "render": {
+    "mode": "glass"
+   },
+   "palette": null,
+   "default_color": null,
+   "specs": [
+    "12 mm toughened glass, aluminium U-channel",
+    "3.5 ft high"
+   ]
+  },
+  {
+   "id": "rail_ss_glass",
+   "name": "SS 304 posts + 12 mm toughened glass",
+   "brand": null,
+   "product": null,
+   "tier": "premium",
+   "category": "Railings",
+   "calc": "railing",
+   "rate": 1000,
+   "rate_range": [
+    750,
+    1300
+   ],
+   "rate_unit": "rft",
+   "labour_rate": 250,
+   "labour_range": [
+    180,
+    320
+   ],
+   "labour_unit": "rft",
+   "waste_pct": 3,
+   "warranty_years": null,
+   "durability": "20+ years",
+   "maintenance": "Clean glass; tighten clamps yearly.",
+   "pros": [
+    "Glass look at lower cost",
+    "SS 304 won't rust"
+   ],
+   "cons": [
+    "Posts interrupt the view"
+   ],
+   "suitable_for": [
+    "railing"
+   ],
+   "render": {
+    "mode": "glass",
+    "posts": true
+   },
+   "palette": null,
+   "default_color": null,
+   "specs": [
+    "SS 304 posts every 4 ft + top rail"
+   ]
+  },
+  {
+   "id": "rail_ss_pipe",
+   "name": "SS 304 pipe railing",
+   "brand": null,
+   "product": null,
+   "tier": "standard",
+   "category": "Railings",
+   "calc": "railing",
+   "rate": 780,
+   "rate_range": [
+    570,
+    1000
+   ],
+   "rate_unit": "rft",
+   "labour_rate": 170,
+   "labour_range": [
+    130,
+    220
+   ],
+   "labour_unit": "rft",
+   "waste_pct": 3,
+   "warranty_years": null,
+   "durability": "20+ years",
+   "maintenance": "Wipe occasionally.",
+   "pros": [
+    "Rust-free",
+    "Low maintenance"
+   ],
+   "cons": [
+    "Can look industrial"
+   ],
+   "suitable_for": [
+    "railing"
+   ],
+   "render": {
+    "mode": "rail",
+    "color": "#C9CDD0"
+   },
+   "palette": null,
+   "default_color": null,
+   "specs": [
+    "SS 304, 50 mm top rail, 4 in balusters"
+   ]
+  },
+  {
+   "id": "rail_ms",
+   "name": "MS railing (powder coated)",
+   "brand": null,
+   "product": null,
+   "tier": "economy",
+   "category": "Railings",
+   "calc": "railing",
+   "rate": 560,
+   "rate_range": [
+    400,
+    1050
+   ],
+   "rate_unit": "rft",
+   "labour_rate": 140,
+   "labour_range": [
+    100,
+    250
+   ],
+   "labour_unit": "rft",
+   "waste_pct": 5,
+   "warranty_years": null,
+   "durability": "8-12 years",
+   "maintenance": "Touch up coating and rust spots every 2-3 years.",
+   "pros": [
+    "Economical",
+    "Any design can be fabricated"
+   ],
+   "cons": [
+    "Rusts if the coating is damaged"
+   ],
+   "suitable_for": [
+    "railing"
+   ],
+   "render": {
+    "mode": "rail",
+    "color": "#2C2E30"
+   },
+   "palette": "metal",
+   "default_color": "#2C2E30",
+   "specs": [
+    "MS hollow sections, powder coated"
+   ]
+  },
+  {
+   "id": "metal_enamel",
+   "name": "Synthetic enamel paint (gates & grills)",
+   "brand": null,
+   "product": "(gates, grills)",
+   "tier": "standard",
+   "category": "Metal finishes",
+   "calc": "paint",
+   "rate": 320,
+   "rate_range": [
+    280,
+    380
+   ],
+   "rate_unit": "L",
+   "labour_rate": 12,
+   "labour_range": [
+    10,
+    16
+   ],
+   "labour_unit": "sqft",
+   "waste_pct": 5,
+   "coverage_sqft_per_l_per_coat": 120,
+   "primer_coverage_sqft_per_l": 120,
+   "primer_rate": 200,
+   "pack_sizes_l": [
+    4,
+    1
+   ],
+   "warranty_years": null,
+   "durability": "3-5 years",
+   "maintenance": "Sand and repaint rusted spots promptly.",
+   "pros": [
+    "Cheapest way to refresh metalwork",
+    "Rust protection with red-oxide primer"
+   ],
+   "cons": [
+    "Repaint every 3-5 years"
+   ],
+   "suitable_for": [
+    "gate",
+    "railing"
+   ],
+   "render": {
+    "mode": "tint",
+    "texture": "plaster-fine.jpg",
+    "tile_ft": 6,
+    "strength": 0.05
+   },
+   "palette": "metal",
+   "default_color": "#2F3A3F",
+   "specs": [
+    "1 coat red-oxide primer + 2 coats enamel",
+    "~120 sqft/L per coat"
+   ]
+  }
+ ]
+}

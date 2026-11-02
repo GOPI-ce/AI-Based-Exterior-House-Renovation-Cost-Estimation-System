@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+
+  --color-ink: #17221c;
+  --color-ink-soft: #3c4a42;
+  --color-muted: #6b7a70;
+  --color-faint: #9aa79f;
+  --color-line: #e2e8e3;
+  --color-line-strong: #cfd8d2;
+  --color-surface: #ffffff;
+  --color-canvas: #f4f6f3;
+  --color-tint: #eef4f0;
+
+  --color-accent: #1f5f45;
+  --color-accent-strong: #164733;
+  --color-accent-soft: #e3efe8;
+
+  --color-warn: #a15c07;
+  --color-warn-soft: #fdf3e2;
+  --color-danger: #b42318;
+  --color-danger-soft: #fdecea;
+  --color-info: #1d4ed8;
+  --color-info-soft: #eaf0fe;
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Number inputs without spinners: values are typed, not clicked. */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.scroll-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line-strong) transparent;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.animate-rise {
+  animation: rise 0.25s ease-out both;
+}
