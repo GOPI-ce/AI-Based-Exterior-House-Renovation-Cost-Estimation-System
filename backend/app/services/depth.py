@@ -35,6 +35,7 @@ from PIL import Image
 
 from app.schemas import Point, Region
 from app.services.geometry import layer_order
+from app.services.segmenter import MODEL_LOAD_LOCK
 
 log = logging.getLogger(__name__)
 
@@ -124,12 +125,13 @@ class DepthEstimator:
 
     def _load(self) -> None:
         try:
-            started = time.perf_counter()
-            import torch  # imported lazily: heavy, and not needed for tests
-            from transformers import pipeline
+            with MODEL_LOAD_LOCK:  # see segmenter.py
+                started = time.perf_counter()
+                import torch  # imported lazily: heavy, and not needed for tests
+                from transformers import pipeline
 
-            torch.set_num_threads(self.threads)
-            self._pipe = pipeline("depth-estimation", model=self.model_id, device="cpu")
+                torch.set_num_threads(self.threads)
+                self._pipe = pipeline("depth-estimation", model=self.model_id, device="cpu")
             self.status = "ready"
             log.info("Depth model loaded in %.1fs", time.perf_counter() - started)
         except Exception:  # measurement falls back to one scale per plane

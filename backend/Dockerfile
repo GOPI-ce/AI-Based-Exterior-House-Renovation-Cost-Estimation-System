@@ -23,6 +23,8 @@ USER user
 RUN python -c "from transformers import Sam2Model, Sam2Processor, pipeline; \
 m='facebook/sam2.1-hiera-tiny'; Sam2Processor.from_pretrained(m); Sam2Model.from_pretrained(m); \
 pipeline('depth-estimation', model='depth-anything/Depth-Anything-V2-Metric-Outdoor-Small-hf')"
+# Use only the baked-in weights at runtime: no Hub calls (and no Hub rate limits) on every cold start.
+ENV HF_HUB_OFFLINE=1
 
 COPY --chown=user app ./app
 COPY --chown=user scripts ./scripts

@@ -1,0 +1,44 @@
+name: Deploy API
+
+# Deploys backend/ to Modal (backend/modal_app.py) after CI passes on main; Modal builds the Docker image.
+# Needs, in GitHub → Settings → Secrets and variables → Actions → Secrets:
+#   MODAL_TOKEN_ID, MODAL_TOKEN_SECRET  (Modal → Settings → API Tokens)
+# and, in Modal → Secrets, a secret named `facade-api` with the app's environment variables.
+# Without the tokens this workflow does nothing.
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-api
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    env:
+      MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+      MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+    steps:
+      - name: Skip when Modal is not configured
+        id: check
+        run: echo "ready=${{ env.MODAL_TOKEN_ID != '' }}" >> "$GITHUB_OUTPUT"
+      - if: steps.check.outputs.ready == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - if: steps.check.outputs.ready == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - if: steps.check.outputs.ready == 'true'
+        run: pip install "modal>=1.6,<2"
+      - if: steps.check.outputs.ready == 'true'
+        name: modal deploy
+        working-directory: backend
+        run: modal deploy modal_app.py

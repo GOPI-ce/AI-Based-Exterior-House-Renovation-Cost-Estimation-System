@@ -14,6 +14,9 @@ import numpy as np
 from PIL import Image
 
 log = logging.getLogger(__name__)
+# Models are loaded one at a time: transformers' lazy imports are not thread-safe, and a concurrent
+# `from transformers import ...` in another loader thread can fail with ImportError.
+MODEL_LOAD_LOCK = threading.Lock()
 
 
 class Segmenter:
@@ -42,13 +45,14 @@ class Segmenter:
 
     def _load(self) -> None:
         try:
-            started = time.perf_counter()
-            import torch  # imported lazily: heavy, and not needed for tests
-            from transformers import Sam2Model, Sam2Processor
+            with MODEL_LOAD_LOCK:
+                started = time.perf_counter()
+                import torch  # imported lazily: heavy, and not needed for tests
+                from transformers import Sam2Model, Sam2Processor
 
-            torch.set_num_threads(self.threads)
-            self._processor = Sam2Processor.from_pretrained(self.model_id)
-            self._model = Sam2Model.from_pretrained(self.model_id).eval()
+                torch.set_num_threads(self.threads)
+                self._processor = Sam2Processor.from_pretrained(self.model_id)
+                self._model = Sam2Model.from_pretrained(self.model_id).eval()
             self.status = "ready"
             log.info("SAM loaded in %.1fs", time.perf_counter() - started)
         except Exception as exc:  # the app must keep working without SAM

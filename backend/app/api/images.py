@@ -11,7 +11,7 @@ from pydantic import ValidationError
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.api.deps import DEMO_OWNER, get_analyzer, get_depth, get_ip_limiter, get_limiter, get_segmenter, optional_workspace, require_workspace
+from app.api.deps import DEMO_OWNER, client_ip, get_analyzer, get_depth, get_ip_limiter, get_limiter, get_segmenter, optional_workspace, require_workspace
 from app.config import get_settings
 from app.db import AnalysisCacheRow, ImageRow, get_db
 from app.schemas import AnalysisResult, ImageInfo
@@ -97,8 +97,8 @@ def get_depth_map(
         raise HTTPException(404, detail={"message": "Image not found."})
     grid = cached_depth(db, row.sha256)
     if grid is None and workspace and row.owner_id == workspace and depth.ready:
-        client_ip = request.client.host if request.client else "unknown"
-        if not ip_limiter.allow(client_ip) or not limiter.allow(workspace):
+        ip = client_ip(request)
+        if not ip_limiter.allow(ip) or not limiter.allow(workspace):
             raise HTTPException(429, detail={"message": "AI limit reached for this hour.", "depth": depth.status})
         grid, _ = ensure_depth(db, row, depth)
     if grid is None:
@@ -141,9 +141,9 @@ def analyze_image(
     if row.owner_id not in (workspace, DEMO_OWNER):
         raise HTTPException(403, detail={"message": "Only the person who uploaded this photo can run AI analysis on it."})
 
-    # The server runs behind a proxy with --proxy-headers, so this is the real client IP.
-    client_ip = request.client.host if request.client else "unknown"
-    if not ip_limiter.allow(client_ip) or not limiter.allow(workspace):
+    # The real client IP, also behind a proxy (see deps.client_ip).
+    ip = client_ip(request)
+    if not ip_limiter.allow(ip) or not limiter.allow(workspace):
         raise HTTPException(429, detail={"message": "AI analysis limit reached for this hour. You can still draw regions manually."})
 
     try:

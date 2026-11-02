@@ -7,7 +7,7 @@ import logging
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
-from app.api.deps import DEMO_OWNER, get_analyzer, get_ip_limiter, get_limiter, require_workspace
+from app.api.deps import DEMO_OWNER, client_ip, get_analyzer, get_ip_limiter, get_limiter, require_workspace
 from app.catalog import get_catalog
 from app.db import ImageRow, get_db
 from app.schemas import DesignSuggestion, DesignSuggestRequest
@@ -32,8 +32,8 @@ def suggest(
 ) -> DesignSuggestion:
     """A full design within the budget. A plain `def`, so FastAPI runs it in a worker thread."""
     # A suggestion can take up to MAX_AI_ROUNDS model calls, so it is charged as that many analyses.
-    client_ip = request.client.host if request.client else "unknown"
-    if not all(ip_limiter.allow(client_ip) and limiter.allow(workspace) for _ in range(MAX_AI_ROUNDS)):
+    ip = client_ip(request)
+    if not all(ip_limiter.allow(ip) and limiter.allow(workspace) for _ in range(MAX_AI_ROUNDS)):
         raise HTTPException(429, detail={"message": "AI limit reached for this hour. You can still choose materials yourself."})
 
     photo = db.get(ImageRow, body.data.views[0].image_id) if body.data.views else None

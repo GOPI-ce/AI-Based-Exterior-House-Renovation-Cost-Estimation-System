@@ -6,8 +6,8 @@ at its own distance with a confidence-rated scale; can **design the whole house 
 
 | | |
 | --- | --- |
-| **Live app** | _https://YOUR-APP.vercel.app_ (filled in at deployment) |
-| **API** | _https://YOUR-SPACE.hf.space/docs_ |
+| **Live app** | **https://ai-based-exterior-house-renovation.vercel.app** |
+| **API** | https://gopichand111333--facade-ai-api.us-east.modal.run/docs (serverless: the first request after a pause takes about a minute to wake) |
 | **Access** | No login. Open the demo house, or upload your own photo. Projects are saved per browser; share links are read-only. |
 | **Stack** | Next.js 16 · React 19 · TypeScript · Tailwind · FastAPI · Gemini 3.5 Flash · SAM 2.1 · Depth Anything V2 · OpenCV · Shapely · ReportLab · Playwright · GitHub Actions |
 
@@ -37,7 +37,7 @@ flowchart LR
     ED["Polygon & scale editors<br/>(SVG, undo/redo)"]
     RE["Renderer (Canvas)<br/>materials at real scale + photo lighting"]
   end
-  subgraph API["FastAPI · Docker on Hugging Face Spaces"]
+  subgraph API["FastAPI · Docker, serverless on Modal"]
     Q["Quality gate<br/>OpenCV"]
     AN["Analysis pipeline<br/>parts + planes + scale cues"]
     SC["Scale engine<br/>per-plane consensus"]
@@ -147,7 +147,7 @@ shows the newly finished wall behind it. Windows, doors and untouched surfaces k
 * **AI outlines need review.** SAM can merge neighbouring parts or produce ragged edges around clutter. The demo shows the AI result with two outlines corrected and one porch column added by hand.
 * **The render is a planning visual**, not a photoreal render. No new geometry, no reflections, and textures are not perspective-warped within a plane.
 * **Rates are indicative** and differ by dealer, quantity and season. Structural repairs, major damp treatment, electrical/plumbing work and permits are not included. Estimates are advisory, not quotations.
-* **No accounts.** Projects are scoped to an anonymous per-browser workspace; share links are read-only. The free Space uses SQLite (resets on rebuild) unless `DATABASE_URL` points to Postgres.
+* **No accounts.** Projects are scoped to an anonymous per-browser workspace; share links are read-only. Data is stored in Postgres (Neon) in production, SQLite locally.
 * **Free-tier hosting.** The API sleeps when idle (about a minute to wake), and Gemini's free tier is sometimes overloaded (the app retries and falls back to 2.5 Flash).
 
 ## 9. Related work
@@ -210,7 +210,8 @@ backend/
   app/demo/               demo photo, its depth map + project
   scripts/                build_catalog.py, build_demo.py, build_demo_depth.py, demo_designs.py
   tests/                  pytest suite
-  Dockerfile              Hugging Face Space image (SAM + depth weights baked in)
+  Dockerfile              API image (SAM + depth weights baked in)
+  modal_app.py            serverless deployment of that image on Modal
 frontend/
   src/app/                routes: / and /p/[id]
   src/components/steps/   the six workflow steps

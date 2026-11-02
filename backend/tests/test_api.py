@@ -182,3 +182,17 @@ def test_depth_is_unavailable_without_the_model(client):
     image = upload(client, textured_image(seed=11)).json()
     r = client.get(f"/api/images/{image['image_id']}/depth", headers=OWNER)
     assert r.status_code == 404 and r.json()["detail"]["depth"] == "disabled"
+
+
+def test_client_ip_behind_a_trusted_proxy(monkeypatch):
+    from starlette.requests import Request
+
+    from app.api.deps import client_ip
+    from app.config import get_settings
+
+    def req(xff):
+        return Request({"type": "http", "headers": [(b"x-forwarded-for", xff.encode())], "client": ("10.0.0.1", 1)})
+
+    assert client_ip(req("1.2.3.4")) == "10.0.0.1"  # no trusted proxy: the header is ignored
+    monkeypatch.setattr(get_settings(), "trusted_proxy_hops", 1)
+    assert client_ip(req("6.6.6.6, 1.2.3.4")) == "1.2.3.4"  # a spoofed left entry is ignored

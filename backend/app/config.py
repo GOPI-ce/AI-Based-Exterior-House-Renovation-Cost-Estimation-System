@@ -34,6 +34,9 @@ class Settings(BaseSettings):
     max_image_side: int = 1600
     analyze_limit_per_hour: int = 20  # per workspace
     analyze_ip_limit_per_hour: int = 40  # per IP, so new workspace ids cannot bypass it
+    # Proxies in front of the app that append to X-Forwarded-For (1 on Modal). 0 = use the socket address
+    # (uvicorn --proxy-headers already resolves it, as in the Docker image).
+    trusted_proxy_hops: int = 0
 
     @property
     def gemini_model_list(self) -> list[str]:

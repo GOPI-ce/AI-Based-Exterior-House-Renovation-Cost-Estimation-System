@@ -12,6 +12,8 @@ import re
 
 from fastapi import Header, HTTPException, Request
 
+from app.config import get_settings
+
 from app.services.depth import DepthEstimator
 from app.services.gemini import SceneAnalyzer
 from app.services.ratelimit import RateLimiter
@@ -32,6 +34,16 @@ def require_workspace(x_workspace_id: str | None = Header(default=None)) -> str:
     if workspace is None:
         raise HTTPException(status_code=401, detail="Missing or invalid X-Workspace-Id header.")
     return workspace
+
+
+def client_ip(request: Request) -> str:
+    """The caller's IP for rate limiting. Behind N trusted proxies it is the N-th address from the right of
+    X-Forwarded-For: those entries were added by our proxies, anything further left could be spoofed."""
+    hops = get_settings().trusted_proxy_hops
+    forwarded = [p.strip() for p in request.headers.get("x-forwarded-for", "").split(",") if p.strip()]
+    if hops and len(forwarded) >= hops:
+        return forwarded[-hops]
+    return request.client.host if request.client else "unknown"
 
 
 def get_analyzer(request: Request) -> SceneAnalyzer:
