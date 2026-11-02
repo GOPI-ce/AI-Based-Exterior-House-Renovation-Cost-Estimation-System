@@ -31,36 +31,45 @@ at its own distance with a confidence-rated scale; can **design the whole house 
 ## 2. Architecture
 
 ```mermaid
-flowchart LR
-  subgraph Browser["Browser · Next.js on Vercel"]
+flowchart TB
+  subgraph WEB["Browser · Next.js on Vercel"]
+    direction LR
     UI["Guided workflow<br/>Photos → Surfaces → Scale → Design → Estimate → Report"]
-    ED["Polygon & scale editors<br/>(SVG, undo/redo)"]
+    ED["Editors<br/>outlines, depth planes, scale lines, undo/redo"]
     RE["Renderer (Canvas)<br/>materials at real scale + photo lighting"]
   end
-  subgraph API["FastAPI · Docker, serverless on Modal"]
-    Q["Quality gate<br/>OpenCV"]
-    AN["Analysis pipeline<br/>parts + planes + scale cues"]
-    SC["Scale engine<br/>per-plane consensus"]
-    EST["Estimator<br/>Shapely + catalogue rules"]
-    PDF["PDF report<br/>ReportLab"]
-    DB[("Projects, photos, AI cache<br/>SQLite / Postgres")]
+
+  subgraph API["FastAPI on Modal (Docker)"]
+    direction LR
+    subgraph PIPE["AI pipeline"]
+      direction TB
+      Q["Quality gate<br/>OpenCV"] --> AN["Analysis<br/>parts, planes, scale cues"]
+      AN --> S["SAM 2.1<br/>pixel-precise outlines"]
+      AN --> D["Depth Anything V2<br/>distance of every surface"]
+    end
+    subgraph COST["Measurement & cost"]
+      direction TB
+      SC["Scale engine<br/>depth-normalised consensus"] --> EST["Estimator<br/>quantities, costs, range, 15-year cost"]
+      AID["AI budget designer<br/>propose → verify → revise / repair"] --> EST
+      EST --> PDF["PDF report<br/>ReportLab"]
+    end
   end
-  G["Gemini 3.5 Flash → 2.5 Flash fallback<br/>scene check, labelled boxes, planes, cues"]
-  S["SAM 2.1 (CPU)<br/>box → pixel mask"]
-  D["Depth Anything V2 (CPU)<br/>per-pixel distance"]
-  UI -->|upload| Q --> DB
-  UI -->|analyse| AN --> G
-  AN --> S
-  AN --> D
-  D -->|depth grid| SC
-  D -->|depth grid| ED
-  AN --> SC
-  AN -->|polygons + planes| ED
+
+  subgraph EXT["Cloud services"]
+    direction LR
+    G["Gemini 3.5 Flash (2.5 fallback)<br/>parts, planes, cues · design proposals"]
+    DB[("Neon Postgres<br/>projects, photos, AI + depth cache")]
+  end
+
+  UI -->|photo| Q
+  AN -->|polygons, planes, depth grid| ED
+  ED -->|edits| SC
+  UI -->|budget + style| AID
+  RE -->|redesigned images| PDF
+  AN --> G
+  AID --> G
   ED -->|autosave| DB
-  UI -->|live, debounced| EST
-  SC --> EST
-  RE -->|rendered images| PDF
-  EST --> PDF
+  AN -->|cache| DB
 ```
 
 * **AI and money logic live on the server.** One estimator (unit-tested) serves the live UI, the BOQ and the PDF, so the numbers always match. The scale algorithm is mirrored in the browser only for live editor feedback.
