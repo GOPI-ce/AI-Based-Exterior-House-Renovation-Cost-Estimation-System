@@ -3,7 +3,7 @@
 Users are identified by an anonymous *workspace id*: a random UUID the browser
 creates once and sends in the X-Workspace-Id header. It scopes projects per
 browser without forcing a sign-up for a planning tool. (A production system would
-put real authentication here; see docs/ARCHITECTURE.md.)
+put real authentication here; see the architecture section of README.md.)
 """
 
 from __future__ import annotations
