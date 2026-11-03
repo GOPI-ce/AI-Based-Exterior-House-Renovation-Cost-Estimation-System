@@ -25,7 +25,7 @@ testing and operations. File references point at the code that implements each p
 16. [Testing and CI](#16-testing-and-ci)
 17. [Operations](#17-operations)
 18. [Design decisions and trade-offs](#18-design-decisions-and-trade-offs)
-19. [Known limitations and next steps](#19-known-limitations-and-next-steps)
+19. [Limitations](#19-limitations)
 
 ---
 
@@ -79,7 +79,7 @@ flowchart LR
 
 **Why one container.** Loaded models and the rate limiter live in process memory. One warm container serving
 16 concurrent requests is enough for a planning tool. CPU-heavy inference is serialised by locks (section 14), so
-extra containers would mainly multiply memory cost. Scaling out would need a shared rate limiter (Redis) first.
+extra containers would mainly multiply memory cost.
 
 **Cold start.** About a minute: the container boots, then SAM and the depth model load from weights baked into the
 image (`HF_HUB_OFFLINE=1`, so there are no downloads at runtime). The frontend's `useServerWake()` calls
@@ -238,7 +238,7 @@ sequenceDiagram
     A->>A: dedupe boxes (IoU > 0.85), plausibility filter for cues
     A->>S: one batch: component boxes + cue boxes
     S-->>A: masks + IoU scores
-    A->>A: masks → simplified polygons; cue lines from mask column heights; auto planes
+    A->>A: masks → simplified polygons, cue lines from mask column heights, auto planes
     A->>D: photo
     D-->>A: metric depth → 192-px cm grid
     A->>DB: cache analysis + depth
@@ -651,9 +651,8 @@ decoding, and re-encoding as JPEG.
   * CORS restricted to configured origins (plus an optional regex for Vercel previews).
 * **Privacy**: uploads are re-encoded and every metadata field except the 35 mm focal length is removed (no GPS,
   no device ids).
-* **Limitation**: anonymous workspaces are a deliberate choice for a no-sign-up planning tool. Production would
-  put real authentication (OAuth/OIDC) behind the same `require_workspace` dependency (one function in
-  [deps.py](../backend/app/api/deps.py)).
+* **Identity**: anonymous workspaces are a deliberate choice for a no-sign-up planning tool. All identity checks
+  go through one dependency, `require_workspace` in [deps.py](../backend/app/api/deps.py).
 
 ---
 
@@ -749,29 +748,19 @@ The full suite including the live AI tests has been run against the deployed sit
 | Client-side renderer | Generative image model | Never distorts the building, instant, free; the free tier has no image-generation quota anyway |
 | LLM chooses, estimator verifies | LLM computes the price | LLM arithmetic and catalogue recall are unreliable; verification makes the budget a guarantee |
 | Project as one JSON document | Normalised tables | Always loaded and saved whole; schema evolves via validators |
-| Anonymous workspaces | Accounts | No sign-up friction for a planning tool; auth is a single dependency to swap |
+| Anonymous workspaces | Accounts | No sign-up friction for a planning tool |
 | Modal serverless (one container) | Always-on VM, HF Spaces | Free, 4 GB RAM for models, scales to zero; HF Docker Spaces now paid |
 | Depth Anything V2 **Small** | Base / Large | Apache-2.0 licence (the larger ones are non-commercial) |
 
 ---
 
-## 19. Known limitations and next steps
+## 19. Limitations
 
-**Limitations** (also in README §8):
+Also in README §8:
 * Single-photo measurement is approximate: confidence-rated, but wrong if every cue is wrong or depth misjudges
   glass and reflections.
 * There is no per-surface angle recovery.
 * The render is a planning visual, not photoreal: no new geometry and no perspective-warped textures within a plane.
 * Rates are indicative.
 * The rate limiter is in memory, so it resets on restart and assumes one container.
-* There are no real user accounts.
-
-**Next steps**
-1. **Accuracy benchmark**: photos of houses with tape-measured surfaces, to report the real measurement error
-   per confidence band and calibrate `scale_error()`.
-2. **Multi-photo fusion**: use several photos of the same facade to cross-check scales and recover angles.
-3. **Perspective-correct texturing**: a per-plane homography from detected window/door rectangles.
-4. **Shared rate limiting and job queue** (Redis): to run more than one container and process analysis
-   asynchronously with progress events.
-5. **Accounts** (OIDC) and project sharing with edit rights.
-6. **Live price feeds** for catalogue rates per city.
+* There are no user accounts: projects belong to an anonymous per-browser workspace.
