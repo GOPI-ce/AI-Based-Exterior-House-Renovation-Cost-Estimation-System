@@ -8,6 +8,7 @@ at its own distance with a confidence-rated scale; can **design the whole house 
 | --- | --- |
 | **Live app** | **https://ai-based-exterior-house-renovation.vercel.app** |
 | **API** | https://gopichand111333--facade-ai-api.us-east.modal.run/docs (serverless: the first request after a pause takes about a minute to wake) |
+| **Technical docs** | [docs/TECHNICAL.md](docs/TECHNICAL.md): architecture, data model, API, AI pipeline, measurement & cost maths, reliability, security, testing |
 | **Access** | No login. Open the demo house, or upload your own photo. Projects are saved per browser; share links are read-only. |
 | **Stack** | Next.js 16 · React 19 · TypeScript · Tailwind · FastAPI · Gemini 3.5 Flash · SAM 2.1 · Depth Anything V2 · OpenCV · Shapely · ReportLab · Playwright · GitHub Actions |
 
@@ -199,9 +200,9 @@ npm run dev
 ## 11. Tests & CI
 
 ```bash
-cd backend && pytest -q                               # 75 tests: scale consensus, depth-normalised scale, AI designer loop, lifetime cost, plausibility, estimator, geometry, quality, API, migration
+cd backend && pytest -q                               # 78 tests: scale consensus, depth-normalised scale, AI designer loop, lifetime cost, plausibility, estimator, geometry, quality, API, migration
 cd frontend && npm run typecheck && npm run lint
-cd frontend && npx playwright install chromium && npm run test:e2e   # 11 browser tests (app must be running)
+cd frontend && npx playwright install chromium && npm run test:e2e   # 13 browser tests (app must be running)
 E2E_AI=1 npm run test:e2e                             # also runs the live AI tests: upload + AI designer (uses Gemini quota)
 ```
 
@@ -228,7 +229,7 @@ frontend/
   src/lib/                API client, types, geometry + scale, renderer, store, BOQ export
   e2e/                    Playwright tests + fixtures
 .github/workflows/ci.yml  CI pipeline
-docs/                     deployment guide
+docs/                     technical documentation, deployment guide
 ```
 
 ## 13. Credits
